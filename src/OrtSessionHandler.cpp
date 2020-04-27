@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cassert>
 #include <numeric>
+#include <sstream>
 
 namespace Ort
 {
@@ -143,10 +144,14 @@ void OrtSessionHandler::OrtSessionHandlerIml::initSession()
     sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
     m_session = Ort::Session(m_env, m_modelPath.c_str(), sessionOptions);
     m_numInputs = m_session.GetInputCount();
+    DEBUG_LOG("Model number of inputs: %d\n", m_numInputs);
+
     m_inputNodeNames.reserve(m_numInputs);
     m_inputTensorSizes.reserve(m_numInputs);
 
     m_numOutputs = m_session.GetOutputCount();
+    DEBUG_LOG("Model number of outputs: %d\n", m_numOutputs);
+
     m_outputNodeNames.reserve(m_numOutputs);
     m_outputTensorSizes.reserve(m_numOutputs);
 }
@@ -161,14 +166,25 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
             m_inputShapes.emplace_back(tensorInfo.GetShape());
         }
 
-        const auto &curInputShape = m_inputShapes[i];
+        const auto& curInputShape = m_inputShapes[i];
 
-        m_inputTensorSizes.emplace_back(std::accumulate(std::begin(curInputShape),
-                                                        std::end(curInputShape), 1, std::multiplies<int64_t>()));
+        m_inputTensorSizes.emplace_back(
+            std::accumulate(std::begin(curInputShape), std::end(curInputShape), 1, std::multiplies<int64_t>()));
 
         char* inputName = m_session.GetInputName(i, m_ortAllocator);
         m_inputNodeNames.emplace_back(strdup(inputName));
         m_ortAllocator.Free(inputName);
+    }
+
+    {
+#if ENABLE_DEBUG
+        std::stringstream ssInputs;
+        ssInputs << "Model input shapes: ";
+        ssInputs << m_inputShapes << std::endl;
+        ssInputs << "Model input node names: ";
+        ssInputs << m_inputNodeNames << std::endl;
+        DEBUG_LOG("%s\n", ssInputs.str().c_str());
+#endif
     }
 
     for (int i = 0; i < m_numOutputs; ++i) {
@@ -180,6 +196,17 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
         char* outputName = m_session.GetOutputName(i, m_ortAllocator);
         m_outputNodeNames.emplace_back(strdup(outputName));
         m_ortAllocator.Free(outputName);
+    }
+
+    {
+#if ENABLE_DEBUG
+        std::stringstream ssOutputs;
+        ssOutputs << "Model output shapes: ";
+        ssOutputs << m_outputShapes << std::endl;
+        ssOutputs << "Model output node names: ";
+        ssOutputs << m_outputNodeNames << std::endl;
+        DEBUG_LOG("%s\n", ssOutputs.str().c_str());
+#endif
     }
 }
 

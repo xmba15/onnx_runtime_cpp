@@ -26,6 +26,11 @@ ImageRecognitionOrtSessionHandlerBase::ImageRecognitionOrtSessionHandlerBase(
     if (numClasses <= 0) {
         throw std::runtime_error("Number of classes must be more than 0\n");
     }
+
+    m_classNames.reserve(m_numClasses);
+    for (uint16_t i = 0; i < m_numClasses; ++i) {
+        m_classNames.emplace_back(std::to_string(i));
+    }
 }
 
 ImageRecognitionOrtSessionHandlerBase::~ImageRecognitionOrtSessionHandlerBase()

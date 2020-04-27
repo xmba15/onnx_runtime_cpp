@@ -38,6 +38,16 @@ class ImageRecognitionOrtSessionHandlerBase : public OrtSessionHandler
                             const std::vector<float>& meanVal = {},  //
                             const std::vector<float>& stdVal = {}) const;
 
+    uint16_t numClasses() const
+    {
+        return m_numClasses;
+    }
+
+    const std::vector<std::string>& classNames() const
+    {
+        return m_classNames;
+    }
+
  protected:
     const uint16_t m_numClasses;
     std::vector<std::string> m_classNames;

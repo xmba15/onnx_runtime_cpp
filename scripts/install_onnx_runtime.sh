@@ -71,7 +71,7 @@ BUILDARGS="${BUILDARGS} --use_cuda --cuda_version=${CUDA_VERSION} --cuda_home=${
 BUILDARGS="${BUILDARGS} --parallel"
 BUILDARGS="${BUILDARGS} --update"
 BUILDARGS="${BUILDARGS} --use_openmp"
-# BUILDARGS="${BUILDARGS} --use_tensorrt --tensorrt_home /path/to/tensorrt
+# BUILDARGS="${BUILDARGS} --use_tensorrt --tensorrt_home /usr/src/tensorrt/"
 BUILDARGS="${BUILDARGS} --cmake_extra_defines CMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}"
 
 # options to preserve environment path of current user

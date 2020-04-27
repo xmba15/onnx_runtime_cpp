@@ -7,6 +7,8 @@
 ```
 
 ## How to build ##
+***
+
 ```bash
 make all
 
@@ -15,7 +17,11 @@ make apps
 ```
 
 ## How to test apps ##
-- Image Classification With Squeezenet
+***
+
+### Image Classification With Squeezenet ###
+***
+
 ```bash
 # after make apps
 ./build/examples/TestImageClassification ./data/squeezenet1.1.onnx ./data/images/dog.jpg
@@ -27,4 +33,14 @@ the following result can be obtained
 227 : kelpie : 0.0314975
 158 : toy terrier : 0.0223435
 230 : Shetland sheepdog, Shetland sheep dog, Shetland : 0.020529
+```
+
+### Object Detection With Tiny-Yolov2 trained on VOC dataset (with 20 classes) ###
+***
+- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/yolov2)
+
+- The shape of the output would be
+```text
+    OUTPUT_FEATUREMAP_SIZE X OUTPUT_FEATUREMAP_SIZE * NUM_ANCHORS * (NUM_CLASSES + 4 + 1)
+    where OUTPUT_FEATUREMAP_SIZE = 13; NUM_ANCHORS = 5; NUM_CLASSES = 20 for the tiny-yolov2 model from onnx model zoo
 ```

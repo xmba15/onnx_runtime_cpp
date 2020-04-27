@@ -1,5 +1,6 @@
 list(APPEND EXAMPLES
   TestImageClassification
+  TestObjectDetection
 )
 
 include(cmake_utility)
@@ -25,3 +26,20 @@ foreach(EXAMPLE ${EXAMPLES})
       ${OpenCV_INCLUDE_DIRS}
   )
 endforeach(EXAMPLE)
+
+add_executable(tiny_yolo_v2
+  ${CMAKE_CURRENT_LIST_DIR}/TinyYolov2.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/TinyYolov2.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/TinyYolov2App.cpp
+)
+
+target_link_libraries(tiny_yolo_v2
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(tiny_yolo_v2
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)
