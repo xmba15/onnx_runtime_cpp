@@ -44,3 +44,11 @@ the following result can be obtained
     OUTPUT_FEATUREMAP_SIZE X OUTPUT_FEATUREMAP_SIZE * NUM_ANCHORS * (NUM_CLASSES + 4 + 1)
     where OUTPUT_FEATUREMAP_SIZE = 13; NUM_ANCHORS = 5; NUM_CLASSES = 20 for the tiny-yolov2 model from onnx model zoo
 ```
+- Test tiny-yolov2 inference apps
+```bash
+# after make apps
+./build/examples/tiny_yolo_v2 [path/to/tiny_yolov2/onnx/model] ./data/images/dog.jpg
+```
+- Test result
+
+![tinyyolov2 test result](./data/images/result.jpg)
