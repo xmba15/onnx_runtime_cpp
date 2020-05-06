@@ -37,10 +37,11 @@ int main(int argc, char* argv[])
     const std::string IMAGE_PATH = argv[2];
 
     Ort::TinyYolov2 osh(Ort::VOC_NUM_CLASSES, ONNX_MODEL_PATH, 0,
-                        std::vector<std::vector<int64_t>>{{1, IMG_CHANNEL, IMG_WIDTH, IMG_HEIGHT}});
+                        std::vector<std::vector<int64_t>>{{1, Ort::TinyYolov2::IMG_CHANNEL, Ort::TinyYolov2::IMG_WIDTH,
+                                                           Ort::TinyYolov2::IMG_HEIGHT}});
 
     osh.initClassNames(Ort::VOC_CLASSES);
-    std::array<float, IMG_WIDTH * IMG_HEIGHT * IMG_CHANNEL> dst;
+    std::array<float, Ort::TinyYolov2::IMG_WIDTH * Ort::TinyYolov2::IMG_HEIGHT * Ort::TinyYolov2::IMG_CHANNEL> dst;
 
     cv::Mat img = cv::imread(IMAGE_PATH);
 
@@ -61,13 +62,14 @@ namespace
 cv::Mat processOneFrame(Ort::TinyYolov2& osh, const cv::Mat& inputImg, float* dst)
 {
     cv::Mat result;
-    cv::resize(inputImg, result, cv::Size(IMG_WIDTH, IMG_HEIGHT));
+    cv::resize(inputImg, result, cv::Size(Ort::TinyYolov2::IMG_WIDTH, Ort::TinyYolov2::IMG_HEIGHT));
 
-    osh.preprocess(dst, result.data, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNEL);
+    osh.preprocess(dst, result.data, Ort::TinyYolov2::IMG_WIDTH, Ort::TinyYolov2::IMG_HEIGHT,
+                   Ort::TinyYolov2::IMG_CHANNEL);
     auto inferenceOutput = osh({dst});
     assert(inferenceOutput.size() == 1);
 
-    std::vector<float> outputData(inferenceOutput.front(), inferenceOutput.front() + NUM_BOXES);
+    std::vector<float> outputData(inferenceOutput.front(), inferenceOutput.front() + Ort::TinyYolov2::NUM_BOXES);
 
     auto processedResult = osh.postProcess(inferenceOutput, CONFIDENCE_THRESHOLD);
     std::vector<std::array<float, 4>> bboxes;

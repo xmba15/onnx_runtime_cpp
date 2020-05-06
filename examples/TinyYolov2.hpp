@@ -19,14 +19,6 @@
 
 #include <ort_utility/ort_utility.hpp>
 
-static constexpr int64_t IMG_WIDTH = 416;
-static constexpr int64_t IMG_HEIGHT = 416;
-static constexpr int64_t IMG_CHANNEL = 3;
-static constexpr int64_t FEATURE_MAP_SIZE = 13 * 13;
-static constexpr int64_t NUM_BOXES = 1 * 13 * 13 * 125;
-static constexpr int64_t NUM_ANCHORS = 5;
-static constexpr float ANCHORS[10] = {1.08, 1.19, 3.42, 4.41, 6.63, 11.38, 9.42, 5.11, 16.62, 10.52};
-
 namespace Ort
 {
 class TinyYolov2 : public ImageRecognitionOrtSessionHandlerBase
