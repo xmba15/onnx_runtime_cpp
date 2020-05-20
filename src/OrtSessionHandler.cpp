@@ -19,6 +19,65 @@
 #include <numeric>
 #include <sstream>
 
+namespace
+{
+std::string toString(const ONNXTensorElementDataType dataType)
+{
+    switch (dataType) {
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT: {
+            return "float";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8: {
+            return "uint8_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8: {
+            return "int8_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16: {
+            return "uint16_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16: {
+            return "int16_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32: {
+            return "int32_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64: {
+            return "int64_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING: {
+            return "string";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL: {
+            return "bool";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16: {
+            return "float16";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE: {
+            return "double";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32: {
+            return "uint32_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64: {
+            return "uint64_t";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64: {
+            return "complex with float32 real and imaginary components";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128: {
+            return "complex with float64 real and imaginary components";
+        }
+        case ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16: {
+            return "complex with float64 real and imaginary components";
+        }
+        default:
+            return "undefined";
+    }
+}
+}  // namespace
+
 namespace Ort
 {
 //-----------------------------------------------------------------------------//
@@ -233,7 +292,10 @@ std::vector<float*> OrtSessionHandler::OrtSessionHandlerIml::operator()(const st
     assert(outputTensors.size() == m_numOutputs);
     std::vector<float*> outputData;
     outputData.reserve(m_numOutputs);
+
+    int count = 1;
     for (auto& elem : outputTensors) {
+        DEBUG_LOG("type of input %d: %s", count++, toString(elem.GetTensorTypeAndShapeInfo().GetElementType()).c_str());
         outputData.emplace_back(std::move(elem.GetTensorMutableData<float>()));
     }
 
