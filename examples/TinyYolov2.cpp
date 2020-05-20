@@ -24,9 +24,15 @@ TinyYolov2::~TinyYolov2()
 }
 
 std::tuple<std::vector<std::array<float, 4>>, std::vector<float>, std::vector<uint64_t>>
-TinyYolov2::postProcess(const std::vector<float*>& inferenceOutput, const float confidenceThresh) const
+TinyYolov2::postProcess(const std::vector<DataOutputType>& inferenceOutput, const float confidenceThresh) const
 {
-    std::vector<float> outputData(inferenceOutput.front(), inferenceOutput.front() + NUM_BOXES);
+    std::vector<float> outputData(inferenceOutput.front().first, inferenceOutput.front().first + NUM_BOXES);
+
+    // or
+    // std::vector<float> outputData(inferenceOutput.front().first,
+    //                               inferenceOutput.front().first +
+    //                                   std::accumulate(inferenceOutput.front().second.begin(),
+    //                                                   inferenceOutput.front().second.end(), 1, std::multiplies<>()));
 
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;

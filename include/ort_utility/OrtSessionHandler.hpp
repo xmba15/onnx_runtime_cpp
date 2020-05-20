@@ -14,6 +14,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace Ort
@@ -21,13 +22,16 @@ namespace Ort
 class OrtSessionHandler
 {
  public:
+    // DataOutputType->(pointer to output data, shape of output data)
+    using DataOutputType = std::pair<float*, std::vector<int64_t>>;
+
     OrtSessionHandler(const std::string& modelPath,  //
                       const std::optional<size_t>& gpuIdx = std::nullopt,
                       const std::optional<std::vector<std::vector<int64_t>>>& inputShapes = std::nullopt);
     ~OrtSessionHandler();
 
     // multiple inputs, multiple outputs
-    std::vector<float*> operator()(const std::vector<float*>& inputImgData);
+    std::vector<DataOutputType> operator()(const std::vector<float*>& inputImgData);
 
  private:
     class OrtSessionHandlerIml;

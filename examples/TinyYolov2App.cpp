@@ -69,8 +69,6 @@ cv::Mat processOneFrame(Ort::TinyYolov2& osh, const cv::Mat& inputImg, float* ds
     auto inferenceOutput = osh({dst});
     assert(inferenceOutput.size() == 1);
 
-    std::vector<float> outputData(inferenceOutput.front(), inferenceOutput.front() + Ort::TinyYolov2::NUM_BOXES);
-
     auto processedResult = osh.postProcess(inferenceOutput, CONFIDENCE_THRESHOLD);
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;

@@ -92,7 +92,7 @@ class OrtSessionHandler::OrtSessionHandlerIml
                          const std::optional<std::vector<std::vector<int64_t>>>& inputShapes);
     ~OrtSessionHandlerIml();
 
-    std::vector<float*> operator()(const std::vector<float*>& inputData);
+    std::vector<DataOutputType> operator()(const std::vector<float*>& inputData);
 
  private:
     void initSession();
@@ -137,7 +137,7 @@ OrtSessionHandler::OrtSessionHandler(const std::string& modelPath,         //
 
 OrtSessionHandler::~OrtSessionHandler() = default;
 
-std::vector<float*> OrtSessionHandler::operator()(const std::vector<float*>& inputImgData)
+std::vector<OrtSessionHandler::DataOutputType> OrtSessionHandler::operator()(const std::vector<float*>& inputImgData)
 {
     return this->m_piml->operator()(inputImgData);
 }
@@ -269,7 +269,8 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
     }
 }
 
-std::vector<float*> OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& inputData)
+std::vector<OrtSessionHandler::DataOutputType> OrtSessionHandler::OrtSessionHandlerIml::
+operator()(const std::vector<float*>& inputData)
 {
     if (m_numInputs != inputData.size()) {
         throw std::runtime_error("Mismatch size of input data\n");
@@ -290,13 +291,14 @@ std::vector<float*> OrtSessionHandler::OrtSessionHandlerIml::operator()(const st
                                        m_numInputs, m_outputNodeNames.data(), m_numOutputs);
 
     assert(outputTensors.size() == m_numOutputs);
-    std::vector<float*> outputData;
+    std::vector<DataOutputType> outputData;
     outputData.reserve(m_numOutputs);
 
     int count = 1;
     for (auto& elem : outputTensors) {
         DEBUG_LOG("type of input %d: %s", count++, toString(elem.GetTensorTypeAndShapeInfo().GetElementType()).c_str());
-        outputData.emplace_back(std::move(elem.GetTensorMutableData<float>()));
+        outputData.emplace_back(
+            std::make_pair(std::move(elem.GetTensorMutableData<float>()), elem.GetTensorTypeAndShapeInfo().GetShape()));
     }
 
     return outputData;

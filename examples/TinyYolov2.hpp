@@ -52,6 +52,6 @@ class TinyYolov2 : public ImageRecognitionOrtSessionHandlerBase
                     const int numChannels) const;
 
     std::tuple<std::vector<std::array<float, 4>>, std::vector<float>, std::vector<uint64_t>>
-    postProcess(const std::vector<float*>& inferenceOutput, const float confidenceThresh = 0.5) const;
+    postProcess(const std::vector<DataOutputType>& inferenceOutput, const float confidenceThresh = 0.5) const;
 };
 }  // namespace Ort

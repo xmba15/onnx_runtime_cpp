@@ -53,8 +53,8 @@ int main(int argc, char* argv[])
         auto inferenceOutput = osh({reinterpret_cast<float*>(dst)});
 
         const int TOP_K = 5;
-        osh.topK(inferenceOutput, TOP_K);
-        // std::cout << osh.topKToString(inferenceOutput, TOP_K) << std::endl;
+        // osh.topK({inferenceOutput[0].first}, TOP_K);
+        std::cout << osh.topKToString({inferenceOutput[0].first}, TOP_K) << std::endl;
     }
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
