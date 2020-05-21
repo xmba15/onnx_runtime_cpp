@@ -104,8 +104,8 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, i
 
             float xmin = inferenceOutput[0].first[i * 4 + 0] / ratio;
             float ymin = inferenceOutput[0].first[i * 4 + 1] / ratio;
-            float xmax = inferenceOutput[0].first[i * 4 + 2] / ratio + 1;
-            float ymax = inferenceOutput[0].first[i * 4 + 3] / ratio + 1;
+            float xmax = inferenceOutput[0].first[i * 4 + 2] / ratio;
+            float ymax = inferenceOutput[0].first[i * 4 + 3] / ratio;
 
             xmin = std::max<float>(xmin, 0);
             ymin = std::max<float>(ymin, 0);
@@ -116,7 +116,7 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, i
             classIndices.emplace_back(reinterpret_cast<int64_t*>(inferenceOutput[1].first)[i]);
 
             cv::Mat curMask(28, 28, CV_32FC1);
-            memcpy(curMask.data, inferenceOutput[3].first, 28 * 28 * sizeof(float));
+            memcpy(curMask.data, inferenceOutput[3].first + i * 28 * 28, 28 * 28 * sizeof(float));
             masks.emplace_back(curMask);
         }
     }

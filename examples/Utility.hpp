@@ -95,9 +95,6 @@ inline cv::Mat visualizeOneImageWithMask(const cv::Mat& img, const std::vector<s
         // ---------------------------------------------------------------------//
         // Visualize masks
 
-        const int curBoxW = static_cast<int>(curBbox[2]) - static_cast<int>(curBbox[0]) + 1;
-        const int curBoxH = static_cast<int>(curBbox[3]) - static_cast<int>(curBbox[1]) + 1;
-
         const cv::Rect curBoxRect(cv::Point(curBbox[0], curBbox[1]), cv::Point(curBbox[2], curBbox[3]));
 
         cv::resize(curMask, curMask, curBoxRect.size());
