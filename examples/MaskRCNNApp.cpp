@@ -66,9 +66,9 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, float* dst,
 {
     cv::Mat result;
     cv::resize(inputImg, result, cv::Size(Ort::MaskRCNN::IMG_WIDTH, Ort::MaskRCNN::IMG_HEIGHT));
-    result -= cv::Scalar(102.9801, 115.9465, 122.7717);
 
-    osh.preprocess(dst, result.data, Ort::MaskRCNN::IMG_WIDTH, Ort::MaskRCNN::IMG_HEIGHT, 3);
+    osh.preprocess(dst, result.data, Ort::MaskRCNN::IMG_WIDTH, Ort::MaskRCNN::IMG_HEIGHT, 3, 0, 0,
+                   {102.9801, 115.9465, 122.7717});
 
     // boxes, labels, scores, masks
     auto inferenceOutput = osh({dst});

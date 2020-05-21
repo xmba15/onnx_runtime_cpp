@@ -31,12 +31,11 @@ void MaskRCNN::preprocess(float* dst,                     //
                           const unsigned char* src,       //
                           const int64_t targetImgWidth,   //
                           const int64_t targetImgHeight,  //
-                          const int numChannels, const std::vector<float>& meanVal) const
+                          const int numChannels,          //
+                          const int64_t offsetPadW,       //
+                          const int64_t offsetPadH,       //
+                          const std::vector<float>& meanVal) const
 {
-    int64_t dataLength = targetImgHeight * targetImgWidth * numChannels;
-
-    memcpy(dst, reinterpret_cast<const float*>(src), dataLength);
-
     if (!meanVal.empty()) {
         for (int i = 0; i < targetImgHeight; ++i) {
             for (int j = 0; j < targetImgWidth; ++j) {
@@ -53,6 +52,14 @@ void MaskRCNN::preprocess(float* dst,                     //
                     dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] =
                         src[i * targetImgWidth * numChannels + j * numChannels + c];
                 }
+            }
+        }
+    }
+
+    for (int i = targetImgHeight; i < targetImgHeight + offsetPadH; ++i) {
+        for (int j = targetImgWidth; j < targetImgWidth + offsetPadW; ++j) {
+            for (int c = 0; c < numChannels; ++c) {
+              dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] = 0;
             }
         }
     }

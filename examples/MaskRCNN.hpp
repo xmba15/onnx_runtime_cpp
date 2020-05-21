@@ -42,6 +42,8 @@ class MaskRCNN : public ImageRecognitionOrtSessionHandlerBase
                     const int64_t targetImgWidth,   //
                     const int64_t targetImgHeight,  //
                     const int numChannels,          //
+                    const int64_t offsetPadW = 0,   //
+                    const int64_t offsetPadH = 0,   //
                     const std::vector<float>& meanVal = {}) const;
 };
 }  // namespace Ort
