@@ -24,7 +24,8 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(Ort::MSCOCO_COLOR
 
 namespace
 {
-cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, float* dst, const float confThresh);
+cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
+                        float ratio, float* dst, const float confThresh);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -37,16 +38,6 @@ int main(int argc, char* argv[])
     const std::string ONNX_MODEL_PATH = argv[1];
     const std::string IMAGE_PATH = argv[2];
 
-    Ort::MaskRCNN osh(Ort::MSCOCO_NUM_CLASSES, ONNX_MODEL_PATH, 0,
-                      std::vector<std::vector<int64_t>>{
-                          {Ort::MaskRCNN::IMG_CHANNEL, Ort::MaskRCNN::IMG_HEIGHT, Ort::MaskRCNN::IMG_WIDTH}});
-
-    // Ort::MaskRCNN osh(Ort::MSCOCO_NUM_CLASSES, ONNX_MODEL_PATH, 0);
-
-    osh.initClassNames(Ort::MSCOCO_CLASSES);
-
-    std::vector<float> dst(Ort::MaskRCNN::IMG_WIDTH * Ort::MaskRCNN::IMG_HEIGHT * Ort::MaskRCNN::IMG_CHANNEL);
-
     cv::Mat img = cv::imread(IMAGE_PATH);
 
     if (img.empty()) {
@@ -54,7 +45,20 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    auto resultImg = ::processOneFrame(osh, img, dst.data(), CONFIDENCE_THRESHOLD);
+    float ratio = 800.0 / std::min(img.cols, img.rows);
+    int newW = ratio * img.cols;
+    int newH = ratio * img.rows;
+    int paddedH = static_cast<int>(((newH + 31) / 32) * 32);
+    int paddedW = static_cast<int>(((newW + 31) / 32) * 32);
+
+    Ort::MaskRCNN osh(Ort::MSCOCO_NUM_CLASSES, ONNX_MODEL_PATH, 0,
+                      std::vector<std::vector<int64_t>>{{Ort::MaskRCNN::IMG_CHANNEL, paddedH, paddedW}});
+
+    osh.initClassNames(Ort::MSCOCO_CLASSES);
+
+    std::vector<float> dst(Ort::MaskRCNN::IMG_CHANNEL * paddedH * paddedW);
+
+    auto resultImg = ::processOneFrame(osh, img, newW, newH, paddedW, paddedH, ratio, dst.data(), CONFIDENCE_THRESHOLD);
     cv::imwrite("result.jpg", resultImg);
 
     return EXIT_SUCCESS;
@@ -62,13 +66,21 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, float* dst, float confThresh)
+cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
+                        float ratio, float* dst, float confThresh)
 {
-    cv::Mat result;
-    cv::resize(inputImg, result, cv::Size(Ort::MaskRCNN::IMG_WIDTH, Ort::MaskRCNN::IMG_HEIGHT));
+    cv::Mat tmpImg;
+    cv::resize(inputImg, tmpImg, cv::Size(newW, newH));
 
-    osh.preprocess(dst, result.data, Ort::MaskRCNN::IMG_WIDTH, Ort::MaskRCNN::IMG_HEIGHT, 3, 0, 0,
-                   {102.9801, 115.9465, 122.7717});
+    tmpImg.convertTo(tmpImg, CV_32FC3);
+    tmpImg -= cv::Scalar(102.9801, 115.9465, 122.7717);
+
+    cv::Mat paddedImg(paddedH, paddedW, CV_32FC3, cv::Scalar(0, 0, 0));
+    tmpImg.copyTo(paddedImg(cv::Rect(0, 0, newW, newH)));
+
+    osh.preprocess(dst, paddedImg.ptr<float>(), paddedW, paddedH, 3);
+    // or
+    // osh.preprocess(dst, paddedImg, paddedW, paddedH, 3);
 
     // boxes, labels, scores, masks
     auto inferenceOutput = osh({dst});
@@ -84,10 +96,17 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, float* dst,
 
     for (size_t i = 0; i < nBoxes; ++i) {
         if (inferenceOutput[2].first[i] > confThresh) {
-            float xmin = inferenceOutput[0].first[i * 4 + 0];
-            float ymin = inferenceOutput[0].first[i * 4 + 1];
-            float xmax = inferenceOutput[0].first[i * 4 + 2];
-            float ymax = inferenceOutput[0].first[i * 4 + 2];
+            DEBUG_LOG("%f", inferenceOutput[2].first[i]);
+
+            float xmin = inferenceOutput[0].first[i * 4 + 0] / ratio;
+            float ymin = inferenceOutput[0].first[i * 4 + 1] / ratio;
+            float xmax = inferenceOutput[0].first[i * 4 + 2] / ratio + 1;
+            float ymax = inferenceOutput[0].first[i * 4 + 3] / ratio + 1;
+
+            xmin = std::max<float>(xmin, 0);
+            ymin = std::max<float>(ymin, 0);
+            xmax = std::min<float>(xmax, inputImg.cols);
+            ymax = std::min<float>(ymax, inputImg.rows);
 
             bboxes.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
             classIndices.emplace_back(reinterpret_cast<int64_t*>(inferenceOutput[1].first)[i]);
@@ -95,11 +114,9 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, float* dst,
     }
 
     if (bboxes.size() == 0) {
-        return result;
+        return inputImg;
     }
 
-    result = ::visualizeOneImage(result, bboxes, classIndices, COLORS, osh.classNames());
-
-    return result;
+    return ::visualizeOneImage(inputImg, bboxes, classIndices, COLORS, osh.classNames());
 }
 }  // namespace

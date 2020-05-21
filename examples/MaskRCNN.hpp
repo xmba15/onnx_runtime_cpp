@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include <opencv2/opencv.hpp>
+
 #include <ort_utility/ort_utility.hpp>
 
 namespace Ort
@@ -22,10 +24,6 @@ namespace Ort
 class MaskRCNN : public ImageRecognitionOrtSessionHandlerBase
 {
  public:
-    static constexpr int64_t IMG_WIDTH = 800;
-
-    static constexpr int64_t IMG_HEIGHT = 800;
-
     static constexpr int64_t MIN_IMAGE_SIZE = 800;
 
     static constexpr int64_t IMG_CHANNEL = 3;
@@ -38,12 +36,15 @@ class MaskRCNN : public ImageRecognitionOrtSessionHandlerBase
     ~MaskRCNN();
 
     void preprocess(float* dst,                     //
-                    const unsigned char* src,       //
+                    const float* src,               //
                     const int64_t targetImgWidth,   //
                     const int64_t targetImgHeight,  //
-                    const int numChannels,          //
-                    const int64_t offsetPadW = 0,   //
-                    const int64_t offsetPadH = 0,   //
-                    const std::vector<float>& meanVal = {}) const;
+                    const int numChannels) const;
+
+    void preprocess(float* dst,                     //
+                    const cv::Mat& imgSrc,          //
+                    const int64_t targetImgWidth,   //
+                    const int64_t targetImgHeight,  //
+                    const int numChannels) const;
 };
 }  // namespace Ort

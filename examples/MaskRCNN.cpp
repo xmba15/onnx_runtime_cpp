@@ -28,38 +28,31 @@ MaskRCNN::~MaskRCNN()
 }
 
 void MaskRCNN::preprocess(float* dst,                     //
-                          const unsigned char* src,       //
+                          const float* src,               //
                           const int64_t targetImgWidth,   //
                           const int64_t targetImgHeight,  //
-                          const int numChannels,          //
-                          const int64_t offsetPadW,       //
-                          const int64_t offsetPadH,       //
-                          const std::vector<float>& meanVal) const
+                          const int numChannels) const
 {
-    if (!meanVal.empty()) {
+    for (int c = 0; c < numChannels; ++c) {
         for (int i = 0; i < targetImgHeight; ++i) {
             for (int j = 0; j < targetImgWidth; ++j) {
-                for (int c = 0; c < numChannels; ++c) {
-                    dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] =
-                        src[i * targetImgWidth * numChannels + j * numChannels + c] - meanVal[c];
-                }
-            }
-        }
-    } else {
-        for (int i = 0; i < targetImgHeight; ++i) {
-            for (int j = 0; j < targetImgWidth; ++j) {
-                for (int c = 0; c < numChannels; ++c) {
-                    dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] =
-                        src[i * targetImgWidth * numChannels + j * numChannels + c];
-                }
+                dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] =
+                    src[i * targetImgWidth * numChannels + j * numChannels + c];
             }
         }
     }
+}
 
-    for (int i = targetImgHeight; i < targetImgHeight + offsetPadH; ++i) {
-        for (int j = targetImgWidth; j < targetImgWidth + offsetPadW; ++j) {
+void MaskRCNN::preprocess(float* dst,                     //
+                          const cv::Mat& imgSrc,          //
+                          const int64_t targetImgWidth,   //
+                          const int64_t targetImgHeight,  //
+                          const int numChannels) const
+{
+    for (int i = 0; i < targetImgHeight; ++i) {
+        for (int j = 0; j < targetImgWidth; ++j) {
             for (int c = 0; c < numChannels; ++c) {
-              dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] = 0;
+                dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] = imgSrc.ptr<float>(i, j)[c];
             }
         }
     }
