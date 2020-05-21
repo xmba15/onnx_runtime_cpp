@@ -52,3 +52,20 @@ the following result can be obtained
 - Test result
 
 ![tinyyolov2 test result](./data/images/result.jpg)
+
+### Object Instance Segmentation With MaskRCNN trained on MS CoCo Dataset (80 + 1(background) clasess) ###
+***
+- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/mask-rcnn)
+
+- As also stated in the url above, there are four outputs: boxes(nboxes x 4), labels(nboxes), scores(nboxes), masks(nboxesx1x28x28)
+- Test mask-rcnn inference apps
+```bash
+# after make apps
+./build/examples/mask_rcnn [path/to/mask_rcnn/onnx/model] ./data/images/dogs.jpg
+```
+
+- Test results:
+
+![dogs maskrcnn result](./data/images/dogs_maskrcnn_result.jpg)
+
+![indoor maskrcnn result](./data/images/indoor_maskrcnn_result.jpg)
