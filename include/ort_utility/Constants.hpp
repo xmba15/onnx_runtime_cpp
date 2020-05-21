@@ -1044,6 +1044,8 @@ static const std::vector<std::string> MSCOCO_CLASSES = {
 
 static constexpr int64_t MSCOCO_NUM_CLASSES = 81;
 
+static const std::vector<std::array<int, 3>> MSCOCO_COLOR_CHART = generateColorCharts(MSCOCO_NUM_CLASSES);
+
 static const std::vector<std::string> VOC_CLASSES = {
     "aeroplane",   "bicycle", "bird",  "boat",      "bottle", "bus",         "car",   "cat",  "chair", "cow",
     "diningtable", "dog",     "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"};

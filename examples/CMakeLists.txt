@@ -27,6 +27,8 @@ foreach(EXAMPLE ${EXAMPLES})
   )
 endforeach(EXAMPLE)
 
+# ---------------------------------------------------------
+
 add_executable(tiny_yolo_v2
   ${CMAKE_CURRENT_LIST_DIR}/TinyYolov2.cpp
   ${CMAKE_CURRENT_LIST_DIR}/TinyYolov2.hpp
@@ -40,6 +42,25 @@ target_link_libraries(tiny_yolo_v2
 )
 
 target_include_directories(tiny_yolo_v2
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)
+
+# ---------------------------------------------------------
+
+add_executable(mask_rcnn
+  ${CMAKE_CURRENT_LIST_DIR}/MaskRCNN.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/MaskRCNN.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/MaskRCNNApp.cpp
+)
+
+target_link_libraries(mask_rcnn
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(mask_rcnn
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
