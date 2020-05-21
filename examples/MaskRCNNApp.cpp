@@ -25,7 +25,9 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(Ort::MSCOCO_COLOR
 namespace
 {
 cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
-                        float ratio, float* dst, const float confThresh);
+                        float ratio, float* dst, const float confThresh = 0.5,
+                        const cv::Scalar& meanVal = cv::Scalar(102.9801, 115.9465, 122.7717),
+                        bool visualizeMask = true);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -67,13 +69,13 @@ int main(int argc, char* argv[])
 namespace
 {
 cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
-                        float ratio, float* dst, float confThresh)
+                        float ratio, float* dst, float confThresh, const cv::Scalar& meanVal, bool visualizeMask)
 {
     cv::Mat tmpImg;
     cv::resize(inputImg, tmpImg, cv::Size(newW, newH));
 
     tmpImg.convertTo(tmpImg, CV_32FC3);
-    tmpImg -= cv::Scalar(102.9801, 115.9465, 122.7717);
+    tmpImg -= meanVal;
 
     cv::Mat paddedImg(paddedH, paddedW, CV_32FC3, cv::Scalar(0, 0, 0));
     tmpImg.copyTo(paddedImg(cv::Rect(0, 0, newW, newH)));
@@ -90,9 +92,11 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, i
 
     std::vector<std::array<float, 4>> bboxes;
     std::vector<uint64_t> classIndices;
+    std::vector<cv::Mat> masks;
 
     bboxes.reserve(nBoxes);
     classIndices.reserve(nBoxes);
+    masks.reserve(nBoxes);
 
     for (size_t i = 0; i < nBoxes; ++i) {
         if (inferenceOutput[2].first[i] > confThresh) {
@@ -110,6 +114,10 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, i
 
             bboxes.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
             classIndices.emplace_back(reinterpret_cast<int64_t*>(inferenceOutput[1].first)[i]);
+
+            cv::Mat curMask(28, 28, CV_32FC1);
+            memcpy(curMask.data, inferenceOutput[3].first, 28 * 28 * sizeof(float));
+            masks.emplace_back(curMask);
         }
     }
 
@@ -117,6 +125,7 @@ cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, i
         return inputImg;
     }
 
-    return ::visualizeOneImage(inputImg, bboxes, classIndices, COLORS, osh.classNames());
+    return visualizeMask ? ::visualizeOneImageWithMask(inputImg, bboxes, classIndices, masks, COLORS, osh.classNames())
+                         : ::visualizeOneImage(inputImg, bboxes, classIndices, COLORS, osh.classNames());
 }
 }  // namespace
