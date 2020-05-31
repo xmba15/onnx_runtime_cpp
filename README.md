@@ -69,3 +69,12 @@ the following result can be obtained
 ![dogs maskrcnn result](./data/images/dogs_maskrcnn_result.jpg)
 
 ![indoor maskrcnn result](./data/images/indoor_maskrcnn_result.jpg)
+
+### Bird Detection With Yolov3 trained on inhouse dataset ###
+***
+
+- Details about the my personal repo for training this model will be updated later
+
+- Test results:
+
+![bird detection result](./data/images/bird_detection_result.jpg)

@@ -29,6 +29,17 @@
 #define ENABLE_DEBUG 0
 #endif
 
+template <typename T, template <typename, typename = std::allocator<T>> class Container>
+std::ostream& operator<<(std::ostream& os, const Container<T>& container)
+{
+    using ContainerType = Container<T>;
+    for (typename ContainerType::const_iterator it = container.begin(); it != container.end(); ++it) {
+        os << *it << " ";
+    }
+
+    return os;
+}
+
 namespace
 {
 template <typename T> std::deque<size_t> sortIndexes(const std::vector<T>& v)

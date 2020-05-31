@@ -64,3 +64,22 @@ target_include_directories(mask_rcnn
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(yolov3
+  ${CMAKE_CURRENT_LIST_DIR}/Yolov3.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Yolov3.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Yolov3App.cpp
+)
+
+target_link_libraries(yolov3
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(yolov3
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)
