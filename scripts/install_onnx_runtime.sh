@@ -61,6 +61,8 @@ echo "-------------------------------------------------------------------------"
 echo "cloning onnxruntime and starting to build..."
 echo "-------------------------------------------------------------------------"
 
+readonly ONNXRUNTIME_VERSION="v1.3.1"
+
 git clone --recursive https://github.com/Microsoft/onnxruntime
 cd onnxruntime
 
