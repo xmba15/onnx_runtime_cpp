@@ -1,5 +1,11 @@
 # small c++ library to quickly use [onnxruntime](https://github.com/microsoft/onnxruntime) to deploy deep learning models #
 
+## TODO
+
+- [x] Support inference of multi-inputs, multi-outputs
+- [x] Examples for famous models, like yolov3, mask-rcnn. Might consider supporting more if requested
+- [ ] Batch-inference
+
 ## Installation ##
 - build onnxruntime from source with the following script
 ```bash
