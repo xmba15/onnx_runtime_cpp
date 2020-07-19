@@ -19,9 +19,6 @@
 #include <utility>
 #include <vector>
 
-// TODO(btran): finally remove this line
-#define DEBUG
-
 #ifdef DEBUG
 #define ENABLE_DEBUG 1
 #include <iostream>

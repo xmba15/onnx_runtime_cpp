@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 
 set(LIBRARY_NAME ${PROJECT_NAME})
 

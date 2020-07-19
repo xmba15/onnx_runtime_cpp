@@ -55,7 +55,7 @@ void ImageRecognitionOrtSessionHandlerBase::preprocess(float* dst,              
                                                        const std::vector<float>& stdVal) const
 {
     if (!meanVal.empty() && !stdVal.empty()) {
-        assert(meanVal.size() == stdVal.size() && meanVal.size() == numChannels);
+        assert(meanVal.size() == stdVal.size() && meanVal.size() == static_cast<std::size_t>(numChannels));
     }
 
     int64_t dataLength = targetImgHeight * targetImgWidth * numChannels;

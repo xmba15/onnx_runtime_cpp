@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 
 project(ort_utility)
 set (CMAKE_CXX_STANDARD 17)
@@ -13,7 +13,11 @@ set(onnxruntime_INCLUDE_DIRS
 
 find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /usr/local/lib)
 
-find_package(OpenMP)
+find_package(OpenMP QUIET)
+
+add_compile_options(
+  "$<$<CONFIG:DEBUG>:-DDEBUG>"
+)
 
 add_subdirectory(src)
 
