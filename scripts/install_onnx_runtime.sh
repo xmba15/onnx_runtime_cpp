@@ -40,13 +40,14 @@ if ! version_greater_equal "${CMAKE_VERSION}" "${CMAKE_LOWEST_VERSION}"; then
 fi
 
 readonly CUDA_HOME=/usr/local/cuda
+readonly CUDNN_MAIN_VERSION=7
 
-if dpkg -L libcudnn7 &> /dev/null; then
-    readonly CUDNN_HOME=`dirname $(dpkg -L libcudnn7 | grep libcudnn.so | head -n1)`
+if dpkg -L libcudnn${CUDNN_MAIN_VERSION} &> /dev/null; then
+    readonly CUDNN_HOME=`dirname $(dpkg -L libcudnn${CUDNN_MAIN_VERSION} | grep libcudnn.so | head -n1)`
 elif ls ${CUDA_HOME}/include/ | grep cudnn &> /dev/null; then
     readonly CUDNN_HOME=${CUDA_HOME}
 else
-    "need to install cudnn"
+    echo "make sure you change CUDNN_MAIN_VERSION line in this script to the version in your system or need to install cudnn"
     exit
 fi
 
