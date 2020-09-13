@@ -85,3 +85,22 @@ target_include_directories(yolov3
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(ultra_light_face_dectector
+  ${CMAKE_CURRENT_LIST_DIR}/UltraLightFastGenericFaceDetector.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/UltraLightFastGenericFaceDetector.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/UltraLightFastGenericFaceDetectorApp.cpp
+)
+
+target_link_libraries(ultra_light_face_dectector
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(ultra_light_face_dectector
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)

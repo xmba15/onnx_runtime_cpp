@@ -3,7 +3,7 @@
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn. Might consider supporting more if requested
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB). Might consider supporting more if requested
 - [ ] Batch-inference
 
 ## Installation ##
@@ -79,8 +79,22 @@ the following result can be obtained
 ### Bird Detection With Yolov3 trained on inhouse dataset ###
 ***
 
-- Details about the my personal repo for training this model will be updated later
+- Details about this personal repo for training this model will be updated later
 
 - Test results:
 
 ![bird detection result](./data/images/bird_detection_result.jpg)
+
+### [Ultra-Light-Fast-Generic-Face-Detector-1MB](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB) ###
+***
+
+- App to use onnx model trained with famous light-weight [Ultra-Light-Fast-Generic-Face-Detector-1MB](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB)
+- Sample weight has been saved [./data/version-RFB-640.onnx](./data/version-RFB-640.onnx)
+- Test inference apps
+```bash
+# after make apps
+./build/examples/ultra_light_face_dectector ./data/version-RFB-640.onnx ./data/images/endgame.jpg
+```
+
+- Test results:
+![ultra light weight face result](./data/images/endgame_result.jpg)
