@@ -65,8 +65,6 @@ cv::Mat processOneFrame(Ort::UltraLightFastGenericFaceDetector& osh, const cv::M
 {
     int origH = inputImg.rows;
     int origW = inputImg.cols;
-    float ratioH = origH * 1.0 / osh.IMG_H;
-    float ratioW = origW * 1.0 / osh.IMG_W;
 
     cv::Mat processedImg;
     cv::resize(inputImg, processedImg, cv::Size(osh.IMG_W, osh.IMG_H));
