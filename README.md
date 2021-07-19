@@ -93,7 +93,7 @@ the following result can be obtained
 - Test inference apps
 ```bash
 # after make apps
-./build/examples/ultra_light_face_dectector ./data/version-RFB-640.onnx ./data/images/endgame.jpg
+./build/examples/ultra_light_face_detector ./data/version-RFB-640.onnx ./data/images/endgame.jpg
 ```
 
 - Test results:
