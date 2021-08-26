@@ -76,14 +76,23 @@ the following result can be obtained
 
 ![indoor maskrcnn result](./data/images/indoor_maskrcnn_result.jpg)
 
-### Bird Detection With Yolov3 trained on inhouse dataset ###
+### Yolo V3 trained on Ms CoCo Dataset ###
 ***
 
-- Details about this personal repo for training this model will be updated later
+- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/yolov3)
 
-- Test results:
+- Test yolo-v3 inference apps
+```bash
+# after make apps
+./build/examples/yolov3 [path/to/yolov3/onnx/model] ./data/images/no_way_home.jpg
+```
 
-![bird detection result](./data/images/bird_detection_result.jpg)
+- Test result
+
+<p align="center">
+  <img width="1000" height="667" src="./data/images/no_way_home_result.jpg">
+</p>
+
 
 ### [Ultra-Light-Fast-Generic-Face-Detector-1MB](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB) ###
 ***

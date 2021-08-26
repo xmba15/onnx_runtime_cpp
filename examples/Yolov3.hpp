@@ -23,9 +23,9 @@ namespace Ort
 class Yolov3 : public ImageRecognitionOrtSessionHandlerBase
 {
  public:
-    static constexpr int64_t IMG_H = 800;
+    static constexpr int64_t IMG_H = 416;
 
-    static constexpr int64_t IMG_W = 800;
+    static constexpr int64_t IMG_W = 416;
 
     static constexpr int64_t IMG_CHANNEL = 3;
 

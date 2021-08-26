@@ -3,10 +3,6 @@
  *
  * @author  btran
  *
- * @date    2020-05-31
- *
- * Copyright (c) organization
- *
  */
 
 #include <ort_utility/ort_utility.hpp>
@@ -14,18 +10,17 @@
 #include "Utility.hpp"
 #include "Yolov3.hpp"
 
-static const std::vector<std::string> BIRD_CLASSES = {"bird_small", "bird_medium", "bird_large"};
-static constexpr int64_t BIRD_NUM_CLASSES = 3;
-static const std::vector<std::array<int, 3>> BIRD_COLOR_CHART = Ort::generateColorCharts(BIRD_NUM_CLASSES);
+static const std::vector<std::string> MSCOCO_WITHOUT_BG_CLASSES(Ort::MSCOCO_CLASSES.begin() + 1,
+                                                                Ort::MSCOCO_CLASSES.end());
+static constexpr int64_t NUM_CLASSES = 80;
+static const std::vector<std::array<int, 3>> COLOR_CHART = Ort::generateColorCharts(NUM_CLASSES);
 
 static constexpr const float CONFIDENCE_THRESHOLD = 0.2;
-static constexpr const float NMS_THRESHOLD = 0.6;
-static const std::vector<cv::Scalar> COLORS = toCvScalarColors(BIRD_COLOR_CHART);
+static const std::vector<cv::Scalar> COLORS = toCvScalarColors(COLOR_CHART);
 
 namespace
 {
-cv::Mat processOneFrame(Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh = 0.15,
-                        const float nmsThresh = 0.5);
+cv::Mat processOneFrame(Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh = 0.15);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -45,11 +40,11 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    Ort::Yolov3 osh(
-        BIRD_NUM_CLASSES, ONNX_MODEL_PATH, 0,
-        std::vector<std::vector<int64_t>>{{1, Ort::Yolov3::IMG_CHANNEL, Ort::Yolov3::IMG_H, Ort::Yolov3::IMG_W}});
+    Ort::Yolov3 osh(NUM_CLASSES, ONNX_MODEL_PATH, 0,
+                    std::vector<std::vector<int64_t>>{
+                        {1, Ort::Yolov3::IMG_CHANNEL, Ort::Yolov3::IMG_H, Ort::Yolov3::IMG_W}, {1, 2}});
 
-    osh.initClassNames(BIRD_CLASSES);
+    osh.initClassNames(MSCOCO_WITHOUT_BG_CLASSES);
 
     std::vector<float> dst(Ort::Yolov3::IMG_CHANNEL * Ort::Yolov3::IMG_H * Ort::Yolov3::IMG_W);
     auto result = processOneFrame(osh, img, dst.data());
@@ -60,71 +55,60 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh,
-                        const float nmsThresh)
+cv::Mat processOneFrame(Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
 {
-    int origH = inputImg.rows;
-    int origW = inputImg.cols;
-    float ratioH = origH * 1.0 / osh.IMG_H;
-    float ratioW = origW * 1.0 / osh.IMG_W;
+    int origW = inputImg.cols, origH = inputImg.rows;
+    std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};
 
-    cv::Mat processedImg;
-    cv::resize(inputImg, processedImg, cv::Size(osh.IMG_W, osh.IMG_H));
+    float scale = std::min<float>(1.0 * Ort::Yolov3::IMG_W / origW, 1.0 * Ort::Yolov3::IMG_H / origH);
+
+    cv::Mat scaledImg;
+    cv::resize(inputImg, scaledImg, cv::Size(), scale, scale, cv::INTER_CUBIC);
+    cv::Mat processedImg(Ort::Yolov3::IMG_H, Ort::Yolov3::IMG_W, CV_8UC3, cv::Scalar(128, 128, 128));
+
+    scaledImg.copyTo(processedImg(cv::Rect((Ort::Yolov3::IMG_W - scaledImg.cols) / 2,
+                                           (Ort::Yolov3::IMG_H - scaledImg.rows) / 2, scaledImg.cols, scaledImg.rows)));
 
     osh.preprocess(dst, processedImg.data, Ort::Yolov3::IMG_W, Ort::Yolov3::IMG_H, 3);
-    auto inferenceOutput = osh({dst});
+    auto inferenceOutput = osh({dst, originImageSize.data()});
     int numAnchors = inferenceOutput[0].second[1];
-    int numAttrs = inferenceOutput[0].second[2];
+    int numOutputBboxes = inferenceOutput[2].second[0];
+    DEBUG_LOG("number anchor candidates: %d", numAnchors);
+    DEBUG_LOG("number output bboxes: %d", numOutputBboxes);
+
+    const float* candidateBboxes = inferenceOutput[0].first;
+    const float* candidateScores = inferenceOutput[1].first;
+    const int32_t* outputIndices = reinterpret_cast<int32_t*>(inferenceOutput[2].first);
 
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;
     std::vector<uint64_t> classIndices;
 
-    for (int i = 0; i < numAnchors * numAttrs; i += numAttrs) {
-        float conf = inferenceOutput[0].first[i + 4];
+    for (int i = 0; i < numOutputBboxes; ++i) {
+        int curClassIdx = outputIndices[i * 3 + 1];
+        int curCandidateIdx = outputIndices[i * 3 + 2];
 
-        if (conf >= confThresh) {
-            float xcenter = inferenceOutput[0].first[i + 0];
-            float ycenter = inferenceOutput[0].first[i + 1];
-            float width = inferenceOutput[0].first[i + 2];
-            float height = inferenceOutput[0].first[i + 3];
+        float curScore = candidateScores[curClassIdx * numAnchors + curCandidateIdx];
 
-            float xmin = xcenter - width / 2;
-            float ymin = ycenter - height / 2;
-            float xmax = xcenter + width / 2;
-            float ymax = ycenter + height / 2;
-            xmin = std::max<float>(xmin, 0);
-            ymin = std::max<float>(ymin, 0);
-            xmax = std::min<float>(xmax, osh.IMG_W - 1);
-            ymax = std::min<float>(ymax, osh.IMG_H - 1);
-
-            bboxes.emplace_back(std::array<float, 4>{xmin * ratioW, ymin * ratioH, xmax * ratioW, ymax * ratioH});
-
-            scores.emplace_back(conf);
-            int maxIdx = std::max_element(inferenceOutput[0].first + i + 5,
-                                          inferenceOutput[0].first + i + 5 + osh.numClasses()) -
-                         (inferenceOutput[0].first + i + 5);
-            classIndices.emplace_back(maxIdx);
+        if (curScore < confThresh) {
+            continue;
         }
+
+        float ymin = candidateBboxes[curCandidateIdx * 4 + 0];
+        float xmin = candidateBboxes[curCandidateIdx * 4 + 1];
+        float ymax = candidateBboxes[curCandidateIdx * 4 + 2];
+        float xmax = candidateBboxes[curCandidateIdx * 4 + 3];
+
+        xmin = std::max<float>(xmin, 0);
+        ymin = std::max<float>(ymin, 0);
+        xmax = std::min<float>(xmax, inputImg.cols - 1);
+        ymax = std::min<float>(ymax, inputImg.rows - 1);
+
+        bboxes.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
+        scores.emplace_back(curScore);
+        classIndices.emplace_back(curClassIdx);
     }
 
-    if (bboxes.size() == 0) {
-        return inputImg;
-    }
-
-    auto afterNmsIndices = Ort::nms(bboxes, scores, nmsThresh);
-
-    std::vector<std::array<float, 4>> afterNmsBboxes;
-    std::vector<uint64_t> afterNmsClassIndices;
-
-    afterNmsBboxes.reserve(afterNmsIndices.size());
-    afterNmsClassIndices.reserve(afterNmsIndices.size());
-
-    for (const auto idx : afterNmsIndices) {
-        afterNmsBboxes.emplace_back(bboxes[idx]);
-        afterNmsClassIndices.emplace_back(classIndices[idx]);
-    }
-
-    return visualizeOneImage(inputImg, afterNmsBboxes, afterNmsClassIndices, COLORS, osh.classNames());
+    return bboxes.empty() ? inputImg : visualizeOneImage(inputImg, bboxes, classIndices, COLORS, osh.classNames());
 }
 }  // namespace
