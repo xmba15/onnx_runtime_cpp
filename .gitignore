@@ -86,3 +86,6 @@ GPATH
 GRTAGS
 GSYMS
 GTAGS
+
+data*
+*onnx*
