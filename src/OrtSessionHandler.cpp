@@ -189,7 +189,11 @@ OrtSessionHandler::OrtSessionHandlerIml::~OrtSessionHandlerIml()
 
 void OrtSessionHandler::OrtSessionHandlerIml::initSession()
 {
+#if ENABLE_DEBUG
     m_env = Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test");
+#else
+    m_env = Ort::Env(ORT_LOGGING_LEVEL_ERROR, "test");
+#endif
     Ort::SessionOptions sessionOptions;
 
     // TODO: need to take care of the following line as it is related to CPU
@@ -269,8 +273,8 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
     }
 }
 
-std::vector<OrtSessionHandler::DataOutputType> OrtSessionHandler::OrtSessionHandlerIml::
-operator()(const std::vector<float*>& inputData)
+std::vector<OrtSessionHandler::DataOutputType>
+OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& inputData)
 {
     if (m_numInputs != inputData.size()) {
         throw std::runtime_error("Mismatch size of input data\n");

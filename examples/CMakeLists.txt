@@ -123,3 +123,21 @@ target_include_directories(yolox
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(semantic_segmentation_paddleseg_bisenetv2
+  ${CMAKE_CURRENT_LIST_DIR}/SemanticSegmentationPaddleSegBisenetv2.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/SemanticSegmentationPaddleSegBisenetv2App.cpp
+)
+
+target_link_libraries(semantic_segmentation_paddleseg_bisenetv2
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(semantic_segmentation_paddleseg_bisenetv2
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)

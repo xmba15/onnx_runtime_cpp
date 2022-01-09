@@ -1053,4 +1053,15 @@ static const std::vector<std::string> VOC_CLASSES = {
 static constexpr int64_t VOC_NUM_CLASSES = 20;
 
 static const std::vector<std::array<int, 3>> VOC_COLOR_CHART = generateColorCharts(VOC_NUM_CLASSES);
+
+static const std::vector<std::string> CITY_SCAPES_CLASSES = {
+    "road", "sidewalk", "building", "wall", "fence", "pole", "traffic light", "traffic sign", "vegetation", "terrain",
+    "sky",  "person",   "rider",    "car",  "truck", "bus",  "train",         "motorcycle",   "bicycle"};
+
+static constexpr int64_t CITY_SCAPES_NUM_CLASSES = 19;
+
+static const std::vector<std::array<int, 3>> CITY_SCAPES_COLOR_CHART = {
+    {128, 64, 128}, {244, 35, 232}, {70, 70, 70},    {102, 102, 156}, {190, 153, 153}, {153, 153, 153}, {250, 170, 30},
+    {220, 220, 0},  {107, 142, 35}, {152, 251, 152}, {70, 130, 180},  {220, 20, 60},   {255, 0, 0},     {0, 0, 142},
+    {0, 0, 70},     {0, 60, 100},   {0, 80, 100},    {0, 0, 230},     {119, 11, 32}};
 }  // namespace Ort
