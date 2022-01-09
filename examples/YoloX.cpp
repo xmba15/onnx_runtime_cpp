@@ -30,9 +30,76 @@ void YoloX::preprocess(float* dst,                     //
         for (int i = 0; i < targetImgHeight; ++i) {
             for (int j = 0; j < targetImgWidth; ++j) {
                 dst[c * targetImgHeight * targetImgWidth + i * targetImgWidth + j] =
-                    src[i * targetImgWidth * numChannels + j * numChannels + c] / 255.0;
+                    src[i * targetImgWidth * numChannels + j * numChannels + c];
             }
         }
     }
+}
+
+void YoloX::decodeOutputs(const float* prob, std::vector<Object>& objects, float confThresh) const
+{
+    std::vector<GridAndStride> gridStrides;
+    this->genereateGridsAndStrides(IMG_W, m_strides, gridStrides);
+    objects = this->generateYoloXProposals(prob, gridStrides, confThresh);
+}
+
+/**
+ *  @brief https://github.com/Megvii-BaseDetection/YOLOX/blob/main/demo/MegEngine/cpp/yolox.cpp#L64
+ */
+void YoloX::genereateGridsAndStrides(int targetSize, const std::vector<int>& strides,
+                                     std::vector<GridAndStride>& gridStrides) const
+{
+    for (auto stride : strides) {
+        int numGrid = targetSize / stride;
+        for (int g1 = 0; g1 < numGrid; g1++) {
+            for (int g0 = 0; g0 < numGrid; g0++) {
+                gridStrides.push_back((GridAndStride){g0, g1, stride});
+            }
+        }
+    }
+}
+
+/**
+ *  @brief https://github.com/Megvii-BaseDetection/YOLOX/blob/main/demo/MegEngine/cpp/yolox.cpp#L76
+ */
+std::vector<YoloX::Object>
+YoloX::generateYoloXProposals(const float* prob, const std::vector<GridAndStride>& gridStrides, float confThresh) const
+{
+    std::vector<Object> objects;
+
+    const int numAnchors = gridStrides.size();
+    const int numClasses = m_numClasses;
+    for (int anchorIdx = 0; anchorIdx < numAnchors; ++anchorIdx) {
+        const int grid0 = gridStrides[anchorIdx].grid0;
+        const int grid1 = gridStrides[anchorIdx].grid1;
+        const int stride = gridStrides[anchorIdx].stride;
+
+        // 4 parameters defining the bounding boxes and 1 parameter defining the confidence
+        const int basicPos = anchorIdx * (numClasses + 5);
+        float xCenter = (prob[basicPos + 0] + grid0) * stride;
+        float yCenter = (prob[basicPos + 1] + grid1) * stride;
+        float w = exp(prob[basicPos + 2]) * stride;
+        float h = exp(prob[basicPos + 3]) * stride;
+        float x0 = xCenter - w * 0.5f;
+        float y0 = yCenter - h * 0.5f;
+
+        float boxObjectness = prob[basicPos + 4];
+        for (int classIdx = 0; classIdx < numClasses; ++classIdx) {
+            float boxClsScore = prob[basicPos + 5 + classIdx];
+            float boxProb = boxObjectness * boxClsScore;
+            if (boxProb > confThresh) {
+                Object obj;
+                obj.pos.x = x0;
+                obj.pos.y = y0;
+                obj.pos.width = w;
+                obj.pos.height = h;
+                obj.label = classIdx;
+                obj.prob = boxProb;
+                objects.push_back(obj);
+            }
+        }
+    }
+
+    return objects;
 }
 }  // namespace Ort

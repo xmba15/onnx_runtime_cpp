@@ -15,12 +15,12 @@ static const std::vector<std::string> MSCOCO_WITHOUT_BG_CLASSES(Ort::MSCOCO_CLAS
 static constexpr int64_t NUM_CLASSES = 80;
 static const std::vector<std::array<int, 3>> COLOR_CHART = Ort::generateColorCharts(NUM_CLASSES);
 
-static constexpr float CONFIDENCE_THRESHOLD = 0.3;
+static constexpr float CONFIDENCE_THRESHOLD = 0.1;
 static const std::vector<cv::Scalar> COLORS = toCvScalarColors(COLOR_CHART);
 
 namespace
 {
-cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh = 0.15);
+cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -40,75 +40,71 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    // Ort::YoloX osh(
-    //     NUM_CLASSES, ONNX_MODEL_PATH, 0,
-    //     std::vector<std::vector<int64_t>>{{1, Ort::YoloX::IMG_CHANNEL, Ort::YoloX::IMG_H, Ort::YoloX::IMG_W}, {1, 2}});
+    Ort::YoloX osh(
+        NUM_CLASSES, ONNX_MODEL_PATH, 0,
+        std::vector<std::vector<int64_t>>{{1, Ort::YoloX::IMG_CHANNEL, Ort::YoloX::IMG_H, Ort::YoloX::IMG_W}});
 
-    // osh.initClassNames(MSCOCO_WITHOUT_BG_CLASSES);
+    osh.initClassNames(MSCOCO_WITHOUT_BG_CLASSES);
 
-    // std::vector<float> dst(Ort::YoloX::IMG_CHANNEL * Ort::YoloX::IMG_H * Ort::YoloX::IMG_W);
-    // auto result = processOneFrame(osh, img, dst.data());
-    // cv::imwrite("result.jpg", result);
+    std::vector<float> dst(Ort::YoloX::IMG_CHANNEL * Ort::YoloX::IMG_H * Ort::YoloX::IMG_W);
+    auto result = processOneFrame(osh, img, dst.data(), CONFIDENCE_THRESHOLD);
+    cv::imwrite("result.jpg", result);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 namespace
 {
-// cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
-// {
-//     int origW = inputImg.cols, origH = inputImg.rows;
-//     std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};
+cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
+{
+    int origW = inputImg.cols, origH = inputImg.rows;
+    std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};
+    cv::Mat scaledImg;
+    cv::resize(inputImg, scaledImg, cv::Size(Ort::YoloX::IMG_W, Ort::YoloX::IMG_H), 0, 0, cv::INTER_CUBIC);
+    osh.preprocess(dst, scaledImg.data, Ort::YoloX::IMG_W, Ort::YoloX::IMG_H, 3);
+    auto inferenceOutput = osh({dst});
 
-//     float scale = std::min<float>(1.0 * Ort::YoloX::IMG_W / origW, 1.0 * Ort::YoloX::IMG_H / origH);
+    std::vector<Ort::YoloX::Object> objects;
+    osh.decodeOutputs(inferenceOutput[0].first, objects, confThresh);
 
-//     cv::Mat scaledImg;
-//     cv::resize(inputImg, scaledImg, cv::Size(), scale, scale, cv::INTER_CUBIC);
-//     cv::Mat processedImg(Ort::YoloX::IMG_H, Ort::YoloX::IMG_W, CV_8UC3, cv::Scalar(128, 128, 128));
+    std::vector<std::array<float, 4>> bboxes;
+    std::vector<float> scores;
+    std::vector<uint64_t> classIndices;
 
-//     scaledImg.copyTo(processedImg(cv::Rect((Ort::YoloX::IMG_W - scaledImg.cols) / 2,
-//                                            (Ort::YoloX::IMG_H - scaledImg.rows) / 2, scaledImg.cols, scaledImg.rows)));
+    float scaleW = 1. * origW / Ort::YoloX::IMG_W;
+    float scaleH = 1. * origH / Ort::YoloX::IMG_H;
 
-//     osh.preprocess(dst, processedImg.data, Ort::YoloX::IMG_W, Ort::YoloX::IMG_H, 3);
-//     auto inferenceOutput = osh({dst, originImageSize.data()});
-//     int numAnchors = inferenceOutput[0].second[1];
-//     int numOutputBboxes = inferenceOutput[2].second[0];
-//     DEBUG_LOG("number anchor candidates: %d", numAnchors);
-//     DEBUG_LOG("number output bboxes: %d", numOutputBboxes);
+    for (const auto& object : objects) {
+        float xmin = object.pos.x * scaleW;
+        float ymin = object.pos.y * scaleH;
+        float xmax = (object.pos.x + object.pos.width) * scaleW;
+        float ymax = (object.pos.y + object.pos.height) * scaleH;
 
-//     const float* candidateBboxes = inferenceOutput[0].first;
-//     const float* candidateScores = inferenceOutput[1].first;
-//     const int32_t* outputIndices = reinterpret_cast<int32_t*>(inferenceOutput[2].first);
+        xmin = std::max<float>(xmin, 0);
+        ymin = std::max<float>(ymin, 0);
+        xmax = std::min<float>(xmax, inputImg.cols - 1);
+        ymax = std::min<float>(ymax, inputImg.rows - 1);
 
-//     std::vector<std::array<float, 4>> bboxes;
-//     std::vector<float> scores;
-//     std::vector<uint64_t> classIndices;
+        bboxes.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
+        scores.emplace_back(object.prob);
+        classIndices.emplace_back(object.label);
+    }
 
-//     for (int i = 0; i < numOutputBboxes; ++i) {
-//         int curClassIdx = outputIndices[i * 3 + 1];
-//         int curCandidateIdx = outputIndices[i * 3 + 2];
+    auto afterNmsIndices = Ort::nms(bboxes, scores, confThresh);
 
-//         float curScore = candidateScores[curClassIdx * numAnchors + curCandidateIdx];
+    std::vector<std::array<float, 4>> afterNmsBboxes;
+    std::vector<uint64_t> afterNmsClassIndices;
 
-//         if (curScore < confThresh) {
-//             continue;
-//         }
+    afterNmsBboxes.reserve(afterNmsIndices.size());
+    afterNmsClassIndices.reserve(afterNmsIndices.size());
 
-//         float ymin = candidateBboxes[curCandidateIdx * 4 + 0];
-//         float xmin = candidateBboxes[curCandidateIdx * 4 + 1];
-//         float ymax = candidateBboxes[curCandidateIdx * 4 + 2];
-//         float xmax = candidateBboxes[curCandidateIdx * 4 + 3];
+    for (const auto idx : afterNmsIndices) {
+        afterNmsBboxes.emplace_back(bboxes[idx]);
+        afterNmsClassIndices.emplace_back(classIndices[idx]);
+    }
 
-//         xmin = std::max<float>(xmin, 0);
-//         ymin = std::max<float>(ymin, 0);
-//         xmax = std::min<float>(xmax, inputImg.cols - 1);
-//         ymax = std::min<float>(ymax, inputImg.rows - 1);
-
-//         bboxes.emplace_back(std::array<float, 4>{xmin, ymin, xmax, ymax});
-//         scores.emplace_back(curScore);
-//         classIndices.emplace_back(curClassIdx);
-//     }
-
-//     return bboxes.empty() ? inputImg : visualizeOneImage(inputImg, bboxes, classIndices, COLORS, osh.classNames());
-// }
+    return afterNmsBboxes.empty()
+               ? inputImg
+               : visualizeOneImage(inputImg, afterNmsBboxes, afterNmsClassIndices, COLORS, osh.classNames());
+}
 }  // namespace
