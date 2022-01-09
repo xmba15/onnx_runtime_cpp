@@ -112,6 +112,7 @@ the following result can be obtained
 ![ultra light weight face result](./data/images/endgame_result.jpg)
 
 ### [YoloX: high-performance anchor-free YOLO by Megvii](https://github.com/Megvii-BaseDetection/YOLOX)
+***
 
 - Download onnx model trained on COCO dataset from [HERE](https://github.com/Megvii-BaseDetection/YOLOX/tree/main/demo/ONNXRuntime)
 ```bash
@@ -126,3 +127,21 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ```
 - Test results:
 ![yolox result](./data/images/matrix_result.jpg)
+
+### [Semantic Segmentation Paddle Seg](https://github.com/PaddlePaddle/PaddleSeg)
+***
+
+- Download PaddleSeg's bisenetv2 trained on cityscapes dataset that has been converted to onnx [HERE](https://drive.google.com/file/d/1e-anuWG_ppDXmoy0sQ0sgrdutCTGlk95/view?usp=sharing)
+
+```bash
+./build/examples/semantic_segmentation_duc ./data/bisenetv2_cityscapes.onnx ./sample_city_scapes.png
+./build/examples/semantic_segmentation_duc ./data/bisenetv2_cityscapes.onnx ./odaiba.jpg
+```
+
+- Test results:
+    + test result on sample image of cityscapes dataset (this model is trained on cityscapes dataset)
+
+![paddleseg city scapes](./data/images/sample_city_scapes_result.jpg)
+
+    + test result on a new scene at Odaiba, Tokyo, Japan
+![paddleseg odaiba](./data/images/odaiba_result.jpg)
