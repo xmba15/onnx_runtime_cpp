@@ -6,7 +6,7 @@ Hope that they both are helpful for your work.
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB). Might consider supporting more if requested
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX). Might consider supporting more if requested
 - [ ] Batch-inference
 
 ## Installation ##
@@ -110,3 +110,19 @@ the following result can be obtained
 
 - Test results:
 ![ultra light weight face result](./data/images/endgame_result.jpg)
+
+### [YoloX: high-performance anchor-free YOLO by Megvii](https://github.com/Megvii-BaseDetection/YOLOX)
+
+- Download onnx model trained on COCO dataset from [HERE](https://github.com/Megvii-BaseDetection/YOLOX/tree/main/demo/ONNXRuntime)
+```bash
+# this app tests yolox_l model but you can try with other yolox models also.
+wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_l.onnx -O ./data/yolox_l.onnx
+```
+
+- Test inference apps
+```bash
+# after make apps
+./build/examples/yolox ./data/yolox_l.onnx ./data/images/matrix.jpg
+```
+- Test results:
+![yolox result](./data/images/matrix_result.jpg)

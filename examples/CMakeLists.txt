@@ -104,3 +104,22 @@ target_include_directories(ultra_light_face_detector
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(yolox
+  ${CMAKE_CURRENT_LIST_DIR}/YoloX.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/YoloX.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/YoloXApp.cpp
+)
+
+target_link_libraries(yolox
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(yolox
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)
