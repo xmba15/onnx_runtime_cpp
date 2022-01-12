@@ -6,7 +6,7 @@ Hope that they both are helpful for your work.
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX). Might consider supporting more if requested
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3). Might consider supporting more if requested
 - [ ] Batch-inference
 
 ## Installation ##
@@ -144,8 +144,8 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 - Test inference apps
 
 ```bash
-./build/examples/semantic_segmentation_duc ./data/bisenetv2_cityscapes.onnx ./sample_city_scapes.png
-./build/examples/semantic_segmentation_duc ./data/bisenetv2_cityscapes.onnx ./odaiba.jpg
+./build/examples/semantic_segmentation_paddleseg_bisenetv2 ./data/bisenetv2_cityscapes.onnx ./sample_city_scapes.png
+./build/examples/semantic_segmentation_paddleseg_bisenetv2 ./data/bisenetv2_cityscapes.onnx ./odaiba.jpg
 ```
 
 - Test results:
@@ -155,7 +155,9 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ![city scapes color legend](./data/images/cityscapes_legend.jpg)
 
     +  test result on sample image of cityscapes dataset (this model is trained on cityscapes dataset)
+
 ![paddleseg city scapes](./data/images/sample_city_scapes_result.jpg)
 
     +  test result on a new scene at Odaiba, Tokyo, Japan
+
 ![paddleseg odaiba](./data/images/odaiba_result.jpg)
