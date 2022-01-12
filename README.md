@@ -149,6 +149,11 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ```
 
 - Test results:
+
+    +  cityscapes dataset's color legend
+
+![city scapes color legend](./data/images/cityscapes_legend.jpg)
+
     +  test result on sample image of cityscapes dataset (this model is trained on cityscapes dataset)
 ![paddleseg city scapes](./data/images/sample_city_scapes_result.jpg)
 
