@@ -46,7 +46,10 @@ int main(int argc, char* argv[])
                            Ort::SemanticSegmentationPaddleSegBisenetv2::IMG_W);
 
     auto result = processOneFrame(osh, img, dst.data());
-    cv::imwrite("result.jpg", result);
+    cv::Mat legend = drawColorChart(Ort::CITY_SCAPES_CLASSES, COLORS);
+    cv::imshow("legend", legend);
+    cv::imshow("overlaid result", result);
+    cv::waitKey(0);
 
     return EXIT_SUCCESS;
 }

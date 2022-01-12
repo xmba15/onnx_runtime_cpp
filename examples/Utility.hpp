@@ -30,7 +30,7 @@ inline std::vector<cv::Scalar> toCvScalarColors(const std::vector<std::array<int
 }
 
 inline cv::Mat visualizeOneImage(const cv::Mat& img, const std::vector<std::array<float, 4>>& bboxes,
-                                 const std::vector<uint64_t>& classIndices, const std::vector<cv::Scalar> allColors,
+                                 const std::vector<uint64_t>& classIndices, const std::vector<cv::Scalar>& allColors,
                                  const std::vector<std::string>& allClassNames = {})
 {
     assert(bboxes.size() == classIndices.size());
@@ -63,7 +63,7 @@ inline cv::Mat visualizeOneImage(const cv::Mat& img, const std::vector<std::arra
 
 inline cv::Mat visualizeOneImageWithMask(const cv::Mat& img, const std::vector<std::array<float, 4>>& bboxes,
                                          const std::vector<uint64_t>& classIndices, const std::vector<cv::Mat>& masks,
-                                         const std::vector<cv::Scalar> allColors,
+                                         const std::vector<cv::Scalar>& allColors,
                                          const std::vector<std::string>& allClassNames = {},
                                          const float maskThreshold = 0.5)
 {
@@ -115,5 +115,17 @@ inline cv::Mat visualizeOneImageWithMask(const cv::Mat& img, const std::vector<s
     }
 
     return result;
+}
+
+cv::Mat drawColorChart(const std::vector<std::string>& classes, const std::vector<cv::Scalar>& colors)
+{
+    cv::Mat legend = cv::Mat::zeros((classes.size() * 25) + 25, 300, CV_8UC(3));
+    for (std::size_t i = 0; i < classes.size(); ++i) {
+        cv::putText(legend, classes[i], cv::Point(5, (i * 25) + 17), cv::FONT_HERSHEY_SIMPLEX, 0.5,
+                    cv::Scalar(0, 0, 255), 2);
+        cv::rectangle(legend, cv::Point(100, (i * 25)), cv::Point(300, (i * 25) + 25), colors[i], -1);
+    }
+
+    return legend;
 }
 }  // namespace
