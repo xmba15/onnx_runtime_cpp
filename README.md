@@ -131,7 +131,17 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ### [Semantic Segmentation Paddle Seg](https://github.com/PaddlePaddle/PaddleSeg)
 ***
 
-- Download PaddleSeg's bisenetv2 trained on cityscapes dataset that has been converted to onnx [HERE](https://drive.google.com/file/d/1e-anuWG_ppDXmoy0sQ0sgrdutCTGlk95/view?usp=sharing)
+- Download PaddleSeg's bisenetv2 trained on cityscapes dataset that has been converted to onnx [HERE](https://drive.google.com/file/d/1e-anuWG_ppDXmoy0sQ0sgrdutCTGlk95/view?usp=sharing) and copy to [./data directory](./data)
+
+<details>
+<summary>You can also convert your own PaddleSeg with following procedures</summary>
+
+*  [export PaddleSeg model](https://github.com/PaddlePaddle/PaddleSeg/blob/release/2.3/docs/model_export.md)
+*  convert exported model to onnx format with [Paddle2ONNX](https://github.com/PaddlePaddle/Paddle2ONNX)
+
+</details>
+
+- Test inference apps
 
 ```bash
 ./build/examples/semantic_segmentation_duc ./data/bisenetv2_cityscapes.onnx ./sample_city_scapes.png
@@ -139,9 +149,8 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ```
 
 - Test results:
-    + test result on sample image of cityscapes dataset (this model is trained on cityscapes dataset)
-
+    +  test result on sample image of cityscapes dataset (this model is trained on cityscapes dataset)
 ![paddleseg city scapes](./data/images/sample_city_scapes_result.jpg)
 
-    + test result on a new scene at Odaiba, Tokyo, Japan
+    +  test result on a new scene at Odaiba, Tokyo, Japan
 ![paddleseg odaiba](./data/images/odaiba_result.jpg)
