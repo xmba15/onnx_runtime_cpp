@@ -3,11 +3,8 @@
  *
  * @author  btran
  *
- * @date    2020-05-18
- *
- * Copyright (c) organization
- *
  */
+
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -24,7 +21,7 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(Ort::MSCOCO_COLOR
 
 namespace
 {
-cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
+cv::Mat processOneFrame(const Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
                         float ratio, float* dst, const float confThresh = 0.5,
                         const cv::Scalar& meanVal = cv::Scalar(102.9801, 115.9465, 122.7717),
                         bool visualizeMask = true);
@@ -68,7 +65,7 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
+cv::Mat processOneFrame(const Ort::MaskRCNN& osh, const cv::Mat& inputImg, int newW, int newH, int paddedW, int paddedH,
                         float ratio, float* dst, float confThresh, const cv::Scalar& meanVal, bool visualizeMask)
 {
     cv::Mat tmpImg;

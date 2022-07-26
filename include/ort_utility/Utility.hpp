@@ -3,8 +3,6 @@
  *
  * @author  btran
  *
- * Copyright (c) organization
- *
  */
 
 #pragma once
@@ -25,17 +23,6 @@
 #else
 #define ENABLE_DEBUG 0
 #endif
-
-template <typename T, template <typename, typename = std::allocator<T>> class Container>
-std::ostream& operator<<(std::ostream& os, const Container<T>& container)
-{
-    using ContainerType = Container<T>;
-    for (typename ContainerType::const_iterator it = container.begin(); it != container.end(); ++it) {
-        os << *it << " ";
-    }
-
-    return os;
-}
 
 namespace
 {

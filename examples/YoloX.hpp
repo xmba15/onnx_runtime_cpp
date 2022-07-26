@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -42,7 +43,7 @@ class YoloX : public ImageRecognitionOrtSessionHandlerBase
                     const int64_t targetImgHeight,  //
                     const int numChannels) const;
 
-    void decodeOutputs(const float* prob, std::vector<Object>& objects, float confThresh) const;
+    std::vector<Object> decodeOutputs(const float* prob, float confThresh) const;
 
     /**
      *  @brief update strides
@@ -59,14 +60,9 @@ class YoloX : public ImageRecognitionOrtSessionHandlerBase
  private:
     std::vector<int> m_strides = {8, 16, 32};
 
-    struct GridAndStride {
-        int grid0;
-        int grid1;
-        int stride;
-    };
+    struct GridAndStride;
 
-    void genereateGridsAndStrides(int targetSize, const std::vector<int>& strides,
-                                  std::vector<GridAndStride>& gridStrides) const;
+    std::vector<GridAndStride> genereateGridsAndStrides(int targetSize, const std::vector<int>& strides) const;
 
     std::vector<Object> generateYoloXProposals(const float* prob, const std::vector<GridAndStride>& gridStrides,
                                                float confThresh) const;

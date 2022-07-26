@@ -4,7 +4,11 @@ CMAKE_ARGS:=$(CMAKE_ARGS)
 
 default:
 	@mkdir -p build
-	@cd build && cmake .. -DBUILD_EXAMPLES=$(BUILD_EXAMPLES) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_ARGS) && make
+	@cd build && cmake .. -DBUILD_EXAMPLES=$(BUILD_EXAMPLES) \
+                              -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
+                              -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                              $(CMAKE_ARGS)
+	@cd build && make
 
 debug:
 	@make default BUILD_TYPE=Debug
