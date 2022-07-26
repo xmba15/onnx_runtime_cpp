@@ -3,8 +3,6 @@
  *
  * @author  btran
  *
- * Copyright (c) organization
- *
  */
 
 #include <chrono>
@@ -23,7 +21,7 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(Ort::VOC_COLOR_CH
 
 namespace
 {
-cv::Mat processOneFrame(Ort::TinyYolov2& osh, const cv::Mat& inputImg, float* dst);
+cv::Mat processOneFrame(const Ort::TinyYolov2& osh, const cv::Mat& inputImg, float* dst);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -59,7 +57,7 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::TinyYolov2& osh, const cv::Mat& inputImg, float* dst)
+cv::Mat processOneFrame(const Ort::TinyYolov2& osh, const cv::Mat& inputImg, float* dst)
 {
     cv::Mat result;
     cv::resize(inputImg, result, cv::Size(Ort::TinyYolov2::IMG_WIDTH, Ort::TinyYolov2::IMG_HEIGHT));

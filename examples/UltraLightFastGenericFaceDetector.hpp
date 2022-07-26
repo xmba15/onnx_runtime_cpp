@@ -24,7 +24,7 @@ class UltraLightFastGenericFaceDetector : public ImageRecognitionOrtSessionHandl
 
     static constexpr int64_t IMG_CHANNEL = 3;
 
-    UltraLightFastGenericFaceDetector(
+    explicit UltraLightFastGenericFaceDetector(
         const std::string& modelPath, const std::optional<size_t>& gpuIdx = std::nullopt,
         const std::optional<std::vector<std::vector<std::int64_t>>>& inputShapes = std::nullopt);
 

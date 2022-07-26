@@ -3,8 +3,6 @@
  *
  * @author  btran
  *
- * Copyright (c) organization
- *
  */
 
 #include "TinyYolov2.hpp"
@@ -38,15 +36,16 @@ TinyYolov2::postProcess(const std::vector<DataOutputType>& inferenceOutput, cons
     std::vector<float> scores;
     std::vector<uint64_t> classIndices;
 
-    float tmpScores[m_numClasses];
+    std::vector<float> tmpScores(m_numClasses);
 
     for (uint64_t i = 0; i < FEATURE_MAP_SIZE; ++i) {
         for (uint64_t j = 0; j < NUM_ANCHORS; ++j) {
             for (uint64_t k = 0; k < m_numClasses; ++k) {
                 tmpScores[k] = outputData[i + FEATURE_MAP_SIZE * ((m_numClasses + 5) * j + k + 5)];
             }
-            Ort::softmax(tmpScores, m_numClasses);
-            uint64_t maxIdx = std::distance(tmpScores, std::max_element(tmpScores, tmpScores + m_numClasses));
+            Ort::softmax(tmpScores.data(), m_numClasses);
+            uint64_t maxIdx =
+                std::distance(tmpScores.begin(), std::max_element(tmpScores.begin(), tmpScores.begin() + m_numClasses));
             float probability = tmpScores[maxIdx];
 
             if (Ort::sigmoid(outputData[i + FEATURE_MAP_SIZE * ((m_numClasses + 5) * j + 4)]) * probability >=
@@ -82,10 +81,6 @@ void TinyYolov2::preprocess(float* dst,                     //
                             const int64_t targetImgHeight,  //
                             const int numChannels) const
 {
-    int64_t dataLength = targetImgHeight * targetImgWidth * numChannels;
-
-    memcpy(dst, reinterpret_cast<const float*>(src), dataLength);
-
     for (int i = 0; i < targetImgHeight; ++i) {
         for (int j = 0; j < targetImgWidth; ++j) {
             for (int c = 0; c < numChannels; ++c) {

@@ -9,6 +9,12 @@
 
 namespace Ort
 {
+struct YoloX::GridAndStride {
+    int grid0;
+    int grid1;
+    int stride;
+};
+
 YoloX::YoloX(const uint16_t numClasses,     //
              const std::string& modelPath,  //
              const std::optional<size_t>& gpuIdx, const std::optional<std::vector<std::vector<int64_t>>>& inputShapes)
@@ -36,19 +42,18 @@ void YoloX::preprocess(float* dst,                     //
     }
 }
 
-void YoloX::decodeOutputs(const float* prob, std::vector<Object>& objects, float confThresh) const
+std::vector<YoloX::Object> YoloX::decodeOutputs(const float* prob, float confThresh) const
 {
-    std::vector<GridAndStride> gridStrides;
-    this->genereateGridsAndStrides(IMG_W, m_strides, gridStrides);
-    objects = this->generateYoloXProposals(prob, gridStrides, confThresh);
+    std::vector<GridAndStride> gridStrides = this->genereateGridsAndStrides(IMG_W, m_strides);
+    return this->generateYoloXProposals(prob, gridStrides, confThresh);
 }
 
 /**
  *  @brief https://github.com/Megvii-BaseDetection/YOLOX/blob/main/demo/MegEngine/cpp/yolox.cpp#L64
  */
-void YoloX::genereateGridsAndStrides(int targetSize, const std::vector<int>& strides,
-                                     std::vector<GridAndStride>& gridStrides) const
+std::vector<YoloX::GridAndStride> YoloX::genereateGridsAndStrides(int targetSize, const std::vector<int>& strides) const
 {
+    std::vector<YoloX::GridAndStride> gridStrides;
     for (auto stride : strides) {
         int numGrid = targetSize / stride;
         for (int g1 = 0; g1 < numGrid; g1++) {
@@ -57,6 +62,7 @@ void YoloX::genereateGridsAndStrides(int targetSize, const std::vector<int>& str
             }
         }
     }
+    return gridStrides;
 }
 
 /**

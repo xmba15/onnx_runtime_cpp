@@ -12,7 +12,7 @@
 
 namespace
 {
-cv::Mat processOneFrame(Ort::SemanticSegmentationPaddleSegBisenetv2& osh, const cv::Mat& inputImg, float* dst,
+cv::Mat processOneFrame(const Ort::SemanticSegmentationPaddleSegBisenetv2& osh, const cv::Mat& inputImg, float* dst,
                         float alpha = 0.4);
 static const std::vector<cv::Scalar> COLORS = toCvScalarColors(Ort::CITY_SCAPES_COLOR_CHART);
 }  // namespace
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::SemanticSegmentationPaddleSegBisenetv2& osh, const cv::Mat& inputImg, float* dst,
+cv::Mat processOneFrame(const Ort::SemanticSegmentationPaddleSegBisenetv2& osh, const cv::Mat& inputImg, float* dst,
                         float alpha)
 {
     int origW = inputImg.cols, origH = inputImg.rows;
@@ -71,7 +71,8 @@ cv::Mat processOneFrame(Ort::SemanticSegmentationPaddleSegBisenetv2& osh, const 
                    Ort::SemanticSegmentationPaddleSegBisenetv2::IMG_H, 3);
     auto inferenceOutput = osh({dst});
 
-    // tips: when you have done all the tricks but still get the wrong output result, try checking the type of inferenceOutput
+    // tips: when you have done all the tricks but still get the wrong output result,
+    // try checking the type of inferenceOutput
     int64_t* data = reinterpret_cast<int64_t*>(inferenceOutput[0].first);
     cv::Mat segm(Ort::SemanticSegmentationPaddleSegBisenetv2::IMG_H, Ort::SemanticSegmentationPaddleSegBisenetv2::IMG_W,
                  CV_8UC(3));

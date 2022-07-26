@@ -3,10 +3,6 @@
  *
  * @author  btran
  *
- * @date    2020-05-18
- *
- * Copyright (c) organization
- *
  */
 
 #pragma once

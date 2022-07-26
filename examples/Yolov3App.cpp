@@ -20,7 +20,7 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(COLOR_CHART);
 
 namespace
 {
-cv::Mat processOneFrame(Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh = 0.15);
+cv::Mat processOneFrame(const Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh = 0.15);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
+cv::Mat processOneFrame(const Ort::Yolov3& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
 {
     int origW = inputImg.cols, origH = inputImg.rows;
     std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};

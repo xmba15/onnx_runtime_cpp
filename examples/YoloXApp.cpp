@@ -20,7 +20,7 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(COLOR_CHART);
 
 namespace
 {
-cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh);
+cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
+cv::Mat processOneFrame(const Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, const float confThresh)
 {
     int origW = inputImg.cols, origH = inputImg.rows;
     std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};
@@ -64,8 +64,7 @@ cv::Mat processOneFrame(Ort::YoloX& osh, const cv::Mat& inputImg, float* dst, co
     osh.preprocess(dst, scaledImg.data, Ort::YoloX::IMG_W, Ort::YoloX::IMG_H, 3);
     auto inferenceOutput = osh({dst});
 
-    std::vector<Ort::YoloX::Object> objects;
-    osh.decodeOutputs(inferenceOutput[0].first, objects, confThresh);
+    std::vector<Ort::YoloX::Object> objects = osh.decodeOutputs(inferenceOutput[0].first, confThresh);
 
     std::vector<std::array<float, 4>> bboxes;
     std::vector<float> scores;

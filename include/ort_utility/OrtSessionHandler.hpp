@@ -3,10 +3,6 @@
  *
  * @author  btran
  *
- * @date    2020-04-19
- *
- * Copyright (c) organization
- *
  */
 
 #pragma once
@@ -25,13 +21,13 @@ class OrtSessionHandler
     // DataOutputType->(pointer to output data, shape of output data)
     using DataOutputType = std::pair<float*, std::vector<int64_t>>;
 
-    OrtSessionHandler(const std::string& modelPath,  //
-                      const std::optional<size_t>& gpuIdx = std::nullopt,
-                      const std::optional<std::vector<std::vector<int64_t>>>& inputShapes = std::nullopt);
+    explicit OrtSessionHandler(const std::string& modelPath,  //
+                               const std::optional<size_t>& gpuIdx = std::nullopt,
+                               const std::optional<std::vector<std::vector<int64_t>>>& inputShapes = std::nullopt);
     ~OrtSessionHandler();
 
     // multiple inputs, multiple outputs
-    std::vector<DataOutputType> operator()(const std::vector<float*>& inputImgData);
+    std::vector<DataOutputType> operator()(const std::vector<float*>& inputImgData) const;
 
  private:
     class OrtSessionHandlerIml;

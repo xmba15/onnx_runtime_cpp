@@ -20,7 +20,7 @@ static const std::vector<cv::Scalar> COLORS = toCvScalarColors(FACE_COLOR_CHART)
 
 namespace
 {
-cv::Mat processOneFrame(Ort::UltraLightFastGenericFaceDetector& osh, const cv::Mat& inputImg, float* dst,
+cv::Mat processOneFrame(const Ort::UltraLightFastGenericFaceDetector& osh, const cv::Mat& inputImg, float* dst,
                         const float confThresh = CONFIDENCE_THRESHOLD, const float nmsThresh = NMS_THRESHOLD);
 }  // namespace
 
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
 namespace
 {
-cv::Mat processOneFrame(Ort::UltraLightFastGenericFaceDetector& osh, const cv::Mat& inputImg, float* dst,
+cv::Mat processOneFrame(const Ort::UltraLightFastGenericFaceDetector& osh, const cv::Mat& inputImg, float* dst,
                         const float confThresh, const float nmsThresh)
 {
     int origH = inputImg.rows;

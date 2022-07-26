@@ -3,14 +3,11 @@
  *
  * @author  btran
  *
- * @date    2020-05-31
- *
- * Copyright (c) organization
- *
  */
 
 #pragma once
 
+#include <string>
 #include <tuple>
 #include <vector>
 

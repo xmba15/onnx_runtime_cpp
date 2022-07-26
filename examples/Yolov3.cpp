@@ -3,13 +3,10 @@
  *
  * @author  btran
  *
- * @date    2020-05-31
- *
- * Copyright (c) organization
- *
  */
 
 #include "Yolov3.hpp"
+#include <string>
 
 namespace Ort
 {

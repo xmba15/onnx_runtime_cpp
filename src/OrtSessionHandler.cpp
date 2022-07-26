@@ -3,10 +3,6 @@
  *
  * @author  btran
  *
- * @date    2020-04-19
- *
- * Copyright (c) organization
- *
  */
 
 #include "ort_utility/ort_utility.hpp"
@@ -92,7 +88,7 @@ class OrtSessionHandler::OrtSessionHandlerIml
                          const std::optional<std::vector<std::vector<int64_t>>>& inputShapes);
     ~OrtSessionHandlerIml();
 
-    std::vector<DataOutputType> operator()(const std::vector<float*>& inputData);
+    std::vector<DataOutputType> operator()(const std::vector<float*>& inputData) const;
 
  private:
     void initSession();
@@ -101,7 +97,7 @@ class OrtSessionHandler::OrtSessionHandlerIml
  private:
     std::string m_modelPath;
 
-    Ort::Session m_session;
+    mutable Ort::Session m_session;
     Ort::Env m_env;
     Ort::AllocatorWithDefaultOptions m_ortAllocator;
 
@@ -137,7 +133,8 @@ OrtSessionHandler::OrtSessionHandler(const std::string& modelPath,         //
 
 OrtSessionHandler::~OrtSessionHandler() = default;
 
-std::vector<OrtSessionHandler::DataOutputType> OrtSessionHandler::operator()(const std::vector<float*>& inputImgData)
+std::vector<OrtSessionHandler::DataOutputType>
+OrtSessionHandler::operator()(const std::vector<float*>& inputImgData) const
 {
     return this->m_piml->operator()(inputImgData);
 }
@@ -196,8 +193,6 @@ void OrtSessionHandler::OrtSessionHandlerIml::initSession()
 #endif
     Ort::SessionOptions sessionOptions;
 
-    // TODO: need to take care of the following line as it is related to CPU
-    // consumption using openmp
     sessionOptions.SetIntraOpNumThreads(1);
 
     if (m_gpuIdx.has_value()) {
@@ -274,7 +269,7 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
 }
 
 std::vector<OrtSessionHandler::DataOutputType>
-OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& inputData)
+OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& inputData) const
 {
     if (m_numInputs != inputData.size()) {
         throw std::runtime_error("Mismatch size of input data\n");
