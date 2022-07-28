@@ -3,8 +3,6 @@
  *
  * @author  btran
  *
- * Copyright (c) organization
- *
  */
 
 #include "ort_utility/ort_utility.hpp"

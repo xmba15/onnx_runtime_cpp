@@ -22,11 +22,6 @@ target_include_directories(${LIBRARY_NAME}
     ${onnxruntime_INCLUDE_DIRS}
 )
 
-target_compile_features(${LIBRARY_NAME}
-  PRIVATE
-     cxx_std_17
-)
-
 target_compile_options(${LIBRARY_NAME}
   PRIVATE
      $<$<CONFIG:Debug>:-O0 -g -Wall -Werror>
@@ -34,10 +29,6 @@ target_compile_options(${LIBRARY_NAME}
 )
 
 list(APPEND PRIVATE_LIBS ${onnxruntime_LIBS})
-
-if (OpenMP_CXX_FOUND)
-  list(APPEND PRIVATE_LIBS OpenMP::OpenMP_CXX)
-endif()
 
 target_link_libraries(${LIBRARY_NAME}
   PRIVATE

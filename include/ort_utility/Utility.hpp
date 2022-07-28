@@ -17,11 +17,8 @@
 #include <utility>
 #include <vector>
 
-#ifdef DEBUG
-#define ENABLE_DEBUG 1
+#if ENABLE_DEBUG
 #include <iostream>
-#else
-#define ENABLE_DEBUG 0
 #endif
 
 namespace
