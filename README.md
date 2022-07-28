@@ -1,3 +1,5 @@
+[![Build](https://github.com/xmba15/onnx_runtime_cpp/actions/workflows/build.yml/badge.svg)](https://github.com/xmba15/onnx_runtime_cpp/actions/workflows/build.yml)
+
 # small c++ library to quickly use [onnxruntime](https://github.com/microsoft/onnxruntime) to deploy deep learning models
 
 Thanks to [cardboardcode](https://github.com/cardboardcode), we have [the documentation](https://onnx-runtime-cpp.readthedocs.io/en/latest/index.html) for this small library.
@@ -14,18 +16,59 @@ Hope that they both are helpful for your work.
 - build onnxruntime from source with the following script
 
 ```bash
-    sudo bash ./scripts/install_onnx_runtime.sh
+    # onnxruntime needs newer cmake version to build
+    bash ./scripts/install_latest_cmake.bash
+
+
+    bash ./scripts/install_onnx_runtime.bash
+
+    # dependencies to build apps
+    bash ./scripts/install_apps_dependencies.bash
 ```
 
 ## How to build
 
 ---
 
+- CPU
+
 ```bash
 make default
 
 # build examples
 make apps
+```
+
+- GPU with CUDA
+
+```bash
+make gpu_default
+
+make gpu_apps
+```
+
+### :whale: How to Run with Docker
+
+- CPU
+
+```bash
+# build
+docker build -f ./dockerfiles/ubuntu2004_gpu.dockerfile -t onnx_runtime .
+
+# run
+docker run -it --rm -v `pwd`:/workspace onnx_runtime
+```
+
+- GPU with CUDA
+
+```bash
+# build
+# change the cuda version to match your local cuda version before build the docker
+
+docker build -f ./dockerfiles/ubuntu2004_gpu.dockerfile -t onnx_runtime_gpu .
+
+# run
+docker run -it --rm --gpus all -v `pwd`:/workspace onnx_runtime_gpu
 ```
 
 ## How to test apps

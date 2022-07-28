@@ -13,10 +13,18 @@ set(onnxruntime_INCLUDE_DIRS
 
 find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /usr/local/lib)
 
-find_package(OpenMP QUIET)
+find_package(CUDA QUIET)
+
+if(CUDA_FOUND AND USE_GPU)
+  add_definitions(-DENABLE_GPU=1)
+else()
+  add_definitions(-DENABLE_GPU=0)
+endif()
+
 
 add_compile_options(
-  "$<$<CONFIG:DEBUG>:-DDEBUG>"
+  "$<$<CONFIG:Debug>:-DENABLE_DEBUG=1>"
+  "$<$<CONFIG:Release>:-DENABLE_DEBUG=0>"
 )
 
 add_subdirectory(src)
