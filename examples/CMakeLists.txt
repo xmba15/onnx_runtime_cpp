@@ -141,3 +141,21 @@ target_include_directories(semantic_segmentation_paddleseg_bisenetv2
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(super_point
+  ${CMAKE_CURRENT_LIST_DIR}/SuperPoint.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/SuperPointApp.cpp
+)
+
+target_link_libraries(super_point
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(super_point
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)
