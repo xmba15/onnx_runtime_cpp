@@ -3,8 +3,6 @@
  *
  * @author  btran
  *
- * Copyright (c) organization
- *
  */
 
 #pragma once
