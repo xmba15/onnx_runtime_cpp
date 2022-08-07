@@ -5,18 +5,16 @@
  *
  */
 
-#include <iostream>
-
 #include "SuperPoint.hpp"
 #include "Utility.hpp"
-#include <opencv2/opencv.hpp>
-#include <stdexcept>
 
 namespace
 {
-std::pair<std::vector<cv::KeyPoint>, cv::Mat> processOneFrame(const Ort::SuperPoint& osh, const cv::Mat& inputImg,
-                                                              float* dst, int borderRemove = 4,
-                                                              float confidenceThresh = 0.015, bool alignCorners = true);
+using KeyPointAndDesc = std::pair<std::vector<cv::KeyPoint>, cv::Mat>;
+
+KeyPointAndDesc processOneFrame(const Ort::SuperPoint& osh, const cv::Mat& inputImg, float* dst, int borderRemove = 4,
+                                float confidenceThresh = 0.015, bool alignCorners = true);
+
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -46,15 +44,40 @@ int main(int argc, char* argv[])
                    [](const auto& imagePath) { return cv::imread(imagePath, 0); });
 
     std::vector<float> dst(Ort::SuperPoint::IMG_CHANNEL * Ort::SuperPoint::IMG_H * Ort::SuperPoint::IMG_W);
-    std::vector<std::pair<std::vector<cv::KeyPoint>, cv::Mat>> results;
+
+    std::vector<KeyPointAndDesc> results;
     std::transform(grays.begin(), grays.end(), std::back_inserter(results),
                    [&osh, &dst](const auto& gray) { return processOneFrame(osh, gray, dst.data()); });
+
+    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+    std::vector<std::vector<cv::DMatch>> knnMatches;
+    const int numMatch = 2;
+    matcher->knnMatch(results[0].second, results[1].second, knnMatches, numMatch);
+
+    std::vector<cv::DMatch> goodMatches;
+    const float loweRatioThresh = 0.8;
+    for (const auto& match : knnMatches) {
+        if (match[0].distance < loweRatioThresh * match[1].distance) {
+            goodMatches.emplace_back(match[0]);
+        }
+    }
+
+    cv::Mat matchesImage;
+    cv::drawMatches(images[0], results[0].first, images[1], results[1].first, goodMatches, matchesImage,
+                    cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
+                    cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+    cv::imwrite("good_matches.jpg", matchesImage);
 
     return EXIT_SUCCESS;
 }
 
 namespace
 {
+/**
+ *  @brief detect super point
+ *
+ *  @return vector of detected key points
+ */
 std::vector<cv::KeyPoint> getKeyPoints(const std::vector<Ort::OrtSessionHandler::DataOutputType>& inferenceOutput,
                                        int borderRemove, float confidenceThresh)
 {
@@ -97,6 +120,11 @@ std::vector<cv::KeyPoint> getKeyPoints(const std::vector<Ort::OrtSessionHandler:
     return keyPoints;
 }
 
+/**
+ *  @brief estimate super point's keypoint descriptor
+ *
+ *  @return keypoint Mat of shape [num key point x 256]
+ */
 cv::Mat getDescriptors(const cv::Mat& coarseDescriptors, const std::vector<cv::KeyPoint>& keyPoints, int height,
                        int width, bool alignCorners)
 {
@@ -109,13 +137,16 @@ cv::Mat getDescriptors(const cv::Mat& coarseDescriptors, const std::vector<cv::K
     }
     keyPointMat = keyPointMat.reshape(1, {1, 1, static_cast<int>(keyPoints.size()), 2});
     cv::Mat descriptors = bilinearGridSample(coarseDescriptors, keyPointMat, alignCorners);
+    descriptors = descriptors.reshape(1, {coarseDescriptors.size[1], static_cast<int>(keyPoints.size())});
 
-    return descriptors.reshape(1, {coarseDescriptors.size[1], static_cast<int>(keyPoints.size())});
+    cv::Mat buffer;
+    transposeNDWrapper(descriptors, {1, 0}, buffer);
+
+    return buffer;
 }
 
-std::pair<std::vector<cv::KeyPoint>, cv::Mat> processOneFrame(const Ort::SuperPoint& osh, const cv::Mat& inputImg,
-                                                              float* dst, int borderRemove, float confidenceThresh,
-                                                              bool alignCorners)
+KeyPointAndDesc processOneFrame(const Ort::SuperPoint& osh, const cv::Mat& inputImg, float* dst, int borderRemove,
+                                float confidenceThresh, bool alignCorners)
 {
     int origW = inputImg.cols, origH = inputImg.rows;
     std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};
