@@ -5,6 +5,21 @@
 Thanks to [cardboardcode](https://github.com/cardboardcode), we have [the documentation](https://onnx-runtime-cpp.readthedocs.io/en/latest/index.html) for this small library.
 Hope that they both are helpful for your work.
 
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#todo">TODO</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li>
+        <a href="#how-to-build">How to Build</a>
+        <ul>
+            <li><a href="#how-to-run-with-docker">How to Run with Docker</a></li>
+        </ul>
+    </li>
+    <li><a href="#how-to-test-apps">How to test apps</a></li>
+  </ol>
+</details>
+
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
@@ -30,7 +45,8 @@ Hope that they both are helpful for your work.
 
 ---
 
-- CPU
+<details>
+<summary>CPU</summary>
 
 ```bash
 make default
@@ -39,7 +55,10 @@ make default
 make apps
 ```
 
-- GPU with CUDA
+</details>
+
+<details>
+<summary>GPU with CUDA</summary>
 
 ```bash
 make gpu_default
@@ -47,19 +66,25 @@ make gpu_default
 make gpu_apps
 ```
 
-### :whale: How to Run with Docker
+</details>
 
-- CPU
+### How to Run with Docker
+
+<details>
+<summary>CPU</summary>
 
 ```bash
 # build
-docker build -f ./dockerfiles/ubuntu2004_gpu.dockerfile -t onnx_runtime .
+docker build -f ./dockerfiles/ubuntu2004.dockerfile -t onnx_runtime .
 
 # run
 docker run -it --rm -v `pwd`:/workspace onnx_runtime
 ```
 
-- GPU with CUDA
+</details>
+
+<details>
+<summary>GPU with CUDA</summary>
 
 ```bash
 # build
@@ -71,6 +96,8 @@ docker build -f ./dockerfiles/ubuntu2004_gpu.dockerfile -t onnx_runtime_gpu .
 docker run -it --rm --gpus all -v `pwd`:/workspace onnx_runtime_gpu
 ```
 
+</details>
+
 ## How to test apps
 
 ---
@@ -78,6 +105,9 @@ docker run -it --rm --gpus all -v `pwd`:/workspace onnx_runtime_gpu
 ### Image Classification With Squeezenet
 
 ---
+
+<details>
+<summary>Usage</summary>
 
 ```bash
 # after make apps
@@ -94,9 +124,20 @@ the following result can be obtained
 230 : Shetland sheepdog, Shetland sheep dog, Shetland : 0.020529
 ```
 
+</details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Object Detection With Tiny-Yolov2 trained on VOC dataset (with 20 classes)
 
 ---
+
+<p align="center" width="100%">
+    <img width="30%" src="docs/images/tiny_yolov2_result.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
 
 - Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/yolov2)
 
@@ -114,13 +155,21 @@ the following result can be obtained
 ./build/examples/tiny_yolo_v2 [path/to/tiny_yolov2/onnx/model] ./data/images/dog.jpg
 ```
 
-- Test result
+</details>
 
-![tinyyolov2 test result](./data/images/result.jpg)
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Object Instance Segmentation With MaskRCNN trained on MS CoCo Dataset (80 + 1(background) clasess)
 
 ---
+
+<p align="center" width="100%">
+    <img width="45%" align=top src="docs/images/dogs_maskrcnn_result.jpg">
+    <img width="45%" align=top src="docs/images/indoor_maskrcnn_result.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
 
 - Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/mask-rcnn)
 
@@ -132,15 +181,20 @@ the following result can be obtained
 ./build/examples/mask_rcnn [path/to/mask_rcnn/onnx/model] ./data/images/dogs.jpg
 ```
 
-- Test results:
+</details>
 
-![dogs maskrcnn result](./data/images/dogs_maskrcnn_result.jpg)
-
-![indoor maskrcnn result](./data/images/indoor_maskrcnn_result.jpg)
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Yolo V3 trained on Ms CoCo Dataset
 
 ---
+
+<p align="center" width="100%">
+    <img width="50%" src="docs/images/no_way_home_result.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
 
 - Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/yolov3)
 
@@ -151,15 +205,20 @@ the following result can be obtained
 ./build/examples/yolov3 [path/to/yolov3/onnx/model] ./data/images/no_way_home.jpg
 ```
 
-- Test result
+</details>
 
-<p align="center">
-  <img width="1000" height="667" src="./data/images/no_way_home_result.jpg">
-</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### [Ultra-Light-Fast-Generic-Face-Detector-1MB](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB)
 
 ---
+
+<p align="center" width="100%">
+    <img width="50%" src="docs/images/endgame_result.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
 
 - App to use onnx model trained with famous light-weight [Ultra-Light-Fast-Generic-Face-Detector-1MB](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB)
 - Sample weight has been saved [./data/version-RFB-640.onnx](./data/version-RFB-640.onnx)
@@ -170,12 +229,20 @@ the following result can be obtained
 ./build/examples/ultra_light_face_detector ./data/version-RFB-640.onnx ./data/images/endgame.jpg
 ```
 
-- Test results:
-  ![ultra light weight face result](./data/images/endgame_result.jpg)
+</details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### [YoloX: high-performance anchor-free YOLO by Megvii](https://github.com/Megvii-BaseDetection/YOLOX)
 
 ---
+
+<p align="center" width="100%">
+    <img width="50%" src="docs/images/matrix_result.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
 
 - Download onnx model trained on COCO dataset from [HERE](https://github.com/Megvii-BaseDetection/YOLOX/tree/main/demo/ONNXRuntime)
 
@@ -191,12 +258,25 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ./build/examples/yolox ./data/yolox_l.onnx ./data/images/matrix.jpg
 ```
 
-- Test results:
-  ![yolox result](./data/images/matrix_result.jpg)
+</details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### [Semantic Segmentation Paddle Seg](https://github.com/PaddlePaddle/PaddleSeg)
 
 ---
+
+<p align="center" width="100%">
+    <img width="20%" src="docs/images/cityscapes_legend.jpg">
+</p>
+
+<p align="center" width="100%">
+    <img width="45%" align=top src="docs/images/sample_city_scapes_result.jpg">
+    <img width="45%" align=top src="docs/images/odaiba_result.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
 
 - Download PaddleSeg's bisenetv2 trained on cityscapes dataset that has been converted to onnx [HERE](https://drive.google.com/file/d/1e-anuWG_ppDXmoy0sQ0sgrdutCTGlk95/view?usp=sharing) and copy to [./data directory](./data)
 
@@ -215,27 +295,20 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ./build/examples/semantic_segmentation_paddleseg_bisenetv2 ./data/bisenetv2_cityscapes.onnx ./data/images/odaiba.jpg
 ```
 
-- Test results:
+</details>
 
-  - cityscapes dataset's color legend
-
-![city scapes color legend](./data/images/cityscapes_legend.jpg)
-
-    +  test result on sample image of cityscapes dataset (this model is trained on cityscapes dataset)
-
-![paddleseg city scapes](./data/images/sample_city_scapes_result.jpg)
-
-    +  test result on a new scene at Odaiba, Tokyo, Japan
-
-![paddleseg odaiba](./data/images/odaiba_result.jpg)
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### [SuperPoint](https://arxiv.org/pdf/1712.07629.pdf)
 
 ---
 
-![super_point_good_matches](./data/images/super_point_good_matches.jpg)
+<p align="center" width="100%">
+    <img width="80%" src="docs/images/super_point_good_matches.jpg">
+</p>
 
 <details>
+<summary>Usage</summary>
 
 - Convert SuperPoint's pretrained weights to onnx format
 
@@ -256,7 +329,9 @@ wget https://raw.githubusercontent.com/StaRainJ/Multi-modality-image-matching-da
 - Test inference apps
 
 ```bash
-./build/examples/super_point ./scripts/superpoint/super_point.onnx data/VisionCS_0a.png data/VisionCS_0b.png
+./build/examples/super_point /path/to/super_point.onnx data/VisionCS_0a.png data/VisionCS_0b.png
 ```
 
 </details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
