@@ -8,7 +8,7 @@ Hope that they both are helpful for your work.
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3). Might consider supporting more if requested
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork). Might consider supporting more if requested
 - [ ] Batch-inference
 
 ## Installation
@@ -228,3 +228,35 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
     +  test result on a new scene at Odaiba, Tokyo, Japan
 
 ![paddleseg odaiba](./data/images/odaiba_result.jpg)
+
+### [SuperPoint](https://arxiv.org/pdf/1712.07629.pdf)
+
+---
+
+![super_point_good_matches](./data/images/super_point_good_matches.jpg)
+
+<details>
+
+- Convert SuperPoint's pretrained weights to onnx format
+
+```bash
+git submodule update --init --recursive
+python3 -m pip install -r scripts/superpoint/requirements.txt
+python3 scripts/superpoint/convert_to_onnx.py
+```
+
+- Download test images from [this dataset](https://github.com/StaRainJ/Multi-modality-image-matching-database-metrics-methods)
+
+```bash
+wget https://raw.githubusercontent.com/StaRainJ/Multi-modality-image-matching-database-metrics-methods/master/Multimodal_Image_Matching_Datasets/ComputerVision/CrossSeason/VisionCS_0a.png -P data
+
+wget https://raw.githubusercontent.com/StaRainJ/Multi-modality-image-matching-database-metrics-methods/master/Multimodal_Image_Matching_Datasets/ComputerVision/CrossSeason/VisionCS_0b.png -P data
+```
+
+- Test inference apps
+
+```bash
+./build/examples/super_point ./scripts/superpoint/super_point.onnx data/VisionCS_0a.png data/VisionCS_0b.png
+```
+
+</details>

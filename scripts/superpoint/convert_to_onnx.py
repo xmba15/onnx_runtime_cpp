@@ -37,6 +37,7 @@ def main():
             "output": {0: "batch_size"},
         },
     )
+    print(f"\nonnx model is saved to: {os.getcwd()}/super_point.onnx")
 
 
 if __name__ == "__main__":

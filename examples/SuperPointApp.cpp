@@ -86,6 +86,8 @@ int main(int argc, char* argv[])
                     cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
                     cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
     cv::imwrite("super_point_good_matches.jpg", matchesImage);
+    cv::imshow("super_point_good_matches", matchesImage);
+    cv::waitKey();
 
     return EXIT_SUCCESS;
 }
@@ -199,7 +201,6 @@ KeyPointAndDesc processOneFrame(const Ort::SuperPoint& osh, const cv::Mat& input
                                 float confidenceThresh, bool alignCorners, int distThresh)
 {
     int origW = inputImg.cols, origH = inputImg.rows;
-    std::vector<float> originImageSize{static_cast<float>(origH), static_cast<float>(origW)};
     cv::Mat scaledImg;
     cv::resize(inputImg, scaledImg, cv::Size(Ort::SuperPoint::IMG_W, Ort::SuperPoint::IMG_H), 0, 0, cv::INTER_CUBIC);
     osh.preprocess(dst, scaledImg.data, Ort::SuperPoint::IMG_W, Ort::SuperPoint::IMG_H, Ort::SuperPoint::IMG_CHANNEL);

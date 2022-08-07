@@ -12,9 +12,8 @@
 #pragma once
 
 #include <algorithm>
-#include <opencv2/core/fast_math.hpp>
-#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <opencv2/opencv.hpp>
