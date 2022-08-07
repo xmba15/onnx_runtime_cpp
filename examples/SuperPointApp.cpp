@@ -7,8 +7,6 @@
 
 #include "SuperPoint.hpp"
 #include "Utility.hpp"
-#include <algorithm>
-#include <iterator>
 
 namespace
 {
