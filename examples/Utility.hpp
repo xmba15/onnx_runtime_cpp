@@ -236,15 +236,13 @@ inline cv::Mat bilinearGridSample(const cv::Mat& input, const cv::Mat& grid, boo
     cv::Mat x1Mat = x0Mat + 1;
     cv::Mat y1Mat = x0Mat + 1;
 
-    cv::Mat wa = (x1Mat - xMat).mul(y1Mat - yMat);
-    cv::Mat wb = (x1Mat - xMat).mul(yMat - y0Mat);
-    cv::Mat wc = (xMat - x0Mat).mul(y1Mat - yMat);
-    cv::Mat wd = (xMat - x0Mat).mul(yMat - y0Mat);
+    std::vector<cv::Mat> weights = {(x1Mat - xMat).mul(y1Mat - yMat), (x1Mat - xMat).mul(yMat - y0Mat),
+                                    (xMat - x0Mat).mul(y1Mat - yMat), (xMat - x0Mat).mul(yMat - y0Mat)};
 
-    std::vector<int> newSize{batch, channel, grid.size[1] * grid.size[2]};
-    cv::Mat result = cv::Mat::zeros(3, newSize.data(), CV_32F);
+    cv::Mat result = cv::Mat::zeros(3, std::vector<int>{batch, channel, grid.size[1] * grid.size[2]}.data(), CV_32F);
 
     auto isCoordSafe = [](int size, int maxSize) -> bool { return size > 0 && size < maxSize; };
+
     for (int b = 0; b < batch; ++b) {
         for (int i = 0; i < grid.size[1] * grid.size[2]; ++i) {
             int x0 = x0Mat.at<float>(b, i);
@@ -252,37 +250,21 @@ inline cv::Mat bilinearGridSample(const cv::Mat& input, const cv::Mat& grid, boo
             int x1 = x1Mat.at<float>(b, i);
             int y1 = y1Mat.at<float>(b, i);
 
-            cv::Mat Ia = cv::Mat::zeros(channel, 1, CV_32F);
-            cv::Mat Ib = cv::Mat::zeros(channel, 1, CV_32F);
-            cv::Mat Ic = cv::Mat::zeros(channel, 1, CV_32F);
-            cv::Mat Id = cv::Mat::zeros(channel, 1, CV_32F);
+            std::vector<std::pair<int, int>> pairs = {{x0, y0}, {x0, y1}, {x1, y0}, {x1, y1}};
+            std::vector<cv::Mat> Is(4, cv::Mat::zeros(channel, 1, CV_32F));
 
-            if (isCoordSafe(x0, width) && isCoordSafe(y0, height)) {
-                Ia = input({cv::Range(b, b + 1), cv::Range::all(), cv::Range(y0, y0 + 1), cv::Range(x0, x0 + 1)})
-                         .clone()
-                         .reshape(1, channel);
+            for (int k = 0; k < 4; ++k) {
+                if (isCoordSafe(pairs[k].first, width) && isCoordSafe(pairs[k].second, height)) {
+                    Is[k] =
+                        input({cv::Range(b, b + 1), cv::Range::all(), cv::Range(pairs[k].second, pairs[k].second + 1),
+                               cv::Range(pairs[k].first, pairs[k].first + 1)})
+                            .clone()
+                            .reshape(1, channel);
+                }
             }
 
-            if (isCoordSafe(x0, width) && isCoordSafe(y1, height)) {
-                Ib = input({cv::Range(b, b + 1), cv::Range::all(), cv::Range(y1, y1 + 1), cv::Range(x0, x0 + 1)})
-                         .clone()
-                         .reshape(1, channel);
-            }
-
-            if (isCoordSafe(x1, width) && isCoordSafe(y0, height)) {
-                Ic = input({cv::Range(b, b + 1), cv::Range::all(), cv::Range(y0, y0 + 1), cv::Range(x1, x1 + 1)})
-                         .clone()
-                         .reshape(1, channel);
-            }
-
-            if (isCoordSafe(x1, width) && isCoordSafe(y1, height)) {
-                Id = input({cv::Range(b, b + 1), cv::Range::all(), cv::Range(y1, y1 + 1), cv::Range(x1, x1 + 1)})
-                         .clone()
-                         .reshape(1, channel);
-            }
-
-            cv::Mat curDescriptor =
-                Ia * wa.at<float>(i) + Ib * wb.at<float>(i) + Ic * wc.at<float>(i) + Id * wd.at<float>(i);
+            cv::Mat curDescriptor = Is[0] * weights[0].at<float>(i) + Is[1] * weights[1].at<float>(i) +
+                                    Is[2] * weights[2].at<float>(i) + Is[3] * weights[3].at<float>(i);
 
             for (int c = 0; c < channel; ++c) {
                 result.at<float>(b, c, i) = curDescriptor.at<float>(c);
