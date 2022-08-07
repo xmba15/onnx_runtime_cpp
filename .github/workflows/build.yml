@@ -6,9 +6,8 @@ on:
   pull_request:
 
 jobs:
-  test-production:
+  linting:
     runs-on: ubuntu-20.04
-
     steps:
       - uses: actions/checkout@v3
 
@@ -17,20 +16,22 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install development dependencies
-        run: |
-          pip install pre-commit==2.20.0
-
       - name: Apply pre-commit
-        run: |
-          pre-commit run --all-files
+        uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files
+
+  test-production:
+    runs-on: ubuntu-20.04
+    container:
+      image: xmba15/onnx_runtime_cpp:v1.10.0-ubuntu20.04
+
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Setup environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends software-properties-common build-essential
-          bash ./scripts/install_latest_cmake.bash
-          bash ./scripts/install_onnx_runtime.bash
           bash ./scripts/install_apps_dependencies.bash
 
       - name: Test building
