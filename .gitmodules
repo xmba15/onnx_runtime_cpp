@@ -1,3 +1,6 @@
 [submodule "scripts/superpoint/SuperPointPretrainedNetwork"]
 	path = scripts/superpoint/SuperPointPretrainedNetwork
 	url = https://github.com/magicleap/SuperPointPretrainedNetwork
+[submodule "scripts/superglue/SuperGluePretrainedNetwork"]
+	path = scripts/superglue/SuperGluePretrainedNetwork
+	url = https://github.com/magicleap/SuperGluePretrainedNetwork.git
