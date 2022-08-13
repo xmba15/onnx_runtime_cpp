@@ -29,6 +29,8 @@ class OrtSessionHandler
     // multiple inputs, multiple outputs
     std::vector<DataOutputType> operator()(const std::vector<float*>& inputImgData) const;
 
+    void updateInputShapes(const std::vector<std::vector<int64_t>>& inputShapes);
+
  private:
     class OrtSessionHandlerIml;
     std::unique_ptr<OrtSessionHandlerIml> m_piml;
