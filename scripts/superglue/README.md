@@ -21,7 +21,6 @@ python3 -m pip install -r SuperGluePretrainedNetwork/requirements.txt
 
 ---
 
-
 - export onnx weights
 
 ```

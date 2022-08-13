@@ -23,7 +23,7 @@ Hope that they both are helpful for your work.
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork). Might consider supporting more if requested
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork), [SuperGlue](https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590). Might consider supporting more if requested
 - [ ] Batch-inference
 
 ## Installation
@@ -164,8 +164,8 @@ the following result can be obtained
 ---
 
 <p align="center" width="100%">
-    <img width="45%" align=top src="docs/images/dogs_maskrcnn_result.jpg">
-    <img width="45%" align=top src="docs/images/indoor_maskrcnn_result.jpg">
+    <img width="45%" height="250" src="docs/images/dogs_maskrcnn_result.jpg">
+    <img width="45%" height="250" src="docs/images/indoor_maskrcnn_result.jpg">
 </p>
 
 <details>
@@ -271,8 +271,8 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 </p>
 
 <p align="center" width="100%">
-    <img width="45%" align=top src="docs/images/sample_city_scapes_result.jpg">
-    <img width="45%" align=top src="docs/images/odaiba_result.jpg">
+    <img width="45%" height="250" align=top src="docs/images/sample_city_scapes_result.jpg">
+    <img width="45%" height="250" align=top src="docs/images/odaiba_result.jpg">
 </p>
 
 <details>
@@ -335,3 +335,47 @@ wget https://raw.githubusercontent.com/StaRainJ/Multi-modality-image-matching-da
 </details>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### [SuperGlue](https://arxiv.org/pdf/1911.11763.pdf)
+
+---
+
+<p align="center" width="100%">
+    <img width="49%" height="250" src="docs/images/ComputerVision_VisionCS_0.jpg">
+    <img width="49%" height="250" src="docs/images/ComputerVision_VN_30.jpg">
+</p>
+
+<p align="center" width="100%">
+    <img width="49%" height="250" src="docs/images/RemoteSensing_CS1.jpg">
+    <img width="49%" height="250" src="docs/images/RemoteSensing_CS5.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
+
+- Convert SuperPoint's pretrained weights to onnx format: Follow the above instruction
+
+- Convert SuperGlue's pretrained weights to onnx format
+
+```bash
+git submodule update --init --recursive
+python3 -m pip install -r scripts/superglue/requirements.txt
+python3 -m pip install -r scripts/superglue/SuperGluePretrainedNetwork/requirements.txt
+python3 scripts/superglue/convert_to_onnx.py
+```
+
+- Download test images from [this dataset](https://github.com/StaRainJ/Multi-modality-image-matching-database-metrics-methods): Or prepare some pairs of your own images
+
+- Test inference apps
+
+```bash
+./build/examples/super_glue /path/to/super_point.onnx /path/to/super_glue.onnx /path/to/1st/image /path/to/2nd/image
+```
+
+- Note: the pretrained superglue model tends to fail on Day-Night image pairs (which also happens for SuperGlue + KNN Match + Lowe's Ratio Test case).
+
+<p align="center" width="100%">
+    <img width="49%" height="250" src="docs/images/ComputerVision_VisionDN_1.jpg">
+</p>
+
+</details>
