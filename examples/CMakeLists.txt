@@ -159,3 +159,21 @@ target_include_directories(super_point
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(super_glue
+  ${CMAKE_CURRENT_LIST_DIR}/SuperPoint.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/SuperGlueApp.cpp
+)
+
+target_link_libraries(super_glue
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(super_glue
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)

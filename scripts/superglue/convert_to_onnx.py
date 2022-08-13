@@ -3,6 +3,7 @@ import os
 
 import torch
 
+import onnxruntime
 from superglue_wrapper import SuperGlueWrapper as SuperGlue
 
 
@@ -25,7 +26,9 @@ def main():
     num_keypoints = 382
     data = {}
     for i in range(2):
-        data[f"image{i}_shape"] = torch.tensor([batch_size, 1, height, width])
+        data[f"image{i}_shape"] = torch.tensor(
+            [batch_size, 1, height, width], dtype=torch.float32
+        )
         data[f"scores{i}"] = torch.randn(batch_size, num_keypoints)
         data[f"keypoints{i}"] = torch.randn(batch_size, num_keypoints, 2)
         data[f"descriptors{i}"] = torch.randn(batch_size, 256, num_keypoints)
@@ -53,6 +56,15 @@ def main():
         },
     )
     print(f"\nonnx model is saved to: {os.getcwd()}/super_glue.onnx")
+
+    print("\ntest inference using onnxruntime")
+    sess = onnxruntime.InferenceSession("super_glue.onnx")
+    for input in sess.get_inputs():
+        print("input: ", input)
+
+    print("\n")
+    for output in sess.get_outputs():
+        print("output: ", output)
 
 
 if __name__ == "__main__":

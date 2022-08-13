@@ -88,6 +88,21 @@ class OrtSessionHandler::OrtSessionHandlerIml
 
     std::vector<DataOutputType> operator()(const std::vector<float*>& inputData) const;
 
+    void updateInputShapes(const std::vector<std::vector<int64_t>>& inputShapes)
+    {
+        if (inputShapes.size() != m_numInputs) {
+            DEBUG_LOG("inputShapes must be of size: %d", m_numInputs);
+            return;
+        }
+        m_inputShapes = inputShapes;
+
+        for (int i = 0; i < m_numInputs; i++) {
+            const auto& curInputShape = m_inputShapes[i];
+            m_inputTensorSizes[i] =
+                std::accumulate(std::begin(curInputShape), std::end(curInputShape), 1, std::multiplies<int64_t>());
+        }
+    }
+
  private:
     void initSession();
     void initModelInfo();
@@ -272,7 +287,8 @@ std::vector<OrtSessionHandler::DataOutputType>
 OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& inputData) const
 {
     if (m_numInputs != inputData.size()) {
-        throw std::runtime_error("Mismatch size of input data\n");
+        DEBUG_LOG("m_numInputs:%d, input size:%ld", m_numInputs, inputData.size());
+        throw std::runtime_error("Mismatch size of input data");
     }
 
     Ort::MemoryInfo memoryInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
@@ -301,5 +317,10 @@ OrtSessionHandler::OrtSessionHandlerIml::operator()(const std::vector<float*>& i
     }
 
     return outputData;
+}
+
+void OrtSessionHandler::updateInputShapes(const std::vector<std::vector<int64_t>>& inputShapes)
+{
+    m_piml->updateInputShapes(inputShapes);
 }
 }  // namespace Ort
