@@ -16,7 +16,7 @@ KeyPointAndDesc processOneFrameSuperPoint(const Ort::SuperPoint& superPointOsh, 
                                           int borderRemove = 4, float confidenceThresh = 0.015,
                                           bool alignCorners = true, int distThresh = 2);
 
-void normalizeDescriptors(cv::Mat& descriptors);
+void normalizeDescriptors(cv::Mat* descriptors);
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
                    });
 
     for (auto& curKeyPointAndDesc : superPointResults) {
-        normalizeDescriptors(curKeyPointAndDesc.second);
+        normalizeDescriptors(&curKeyPointAndDesc.second);
     }
 
     // superglue
@@ -134,14 +134,14 @@ int main(int argc, char* argv[])
 
 namespace
 {
-void normalizeDescriptors(cv::Mat& descriptors)
+void normalizeDescriptors(cv::Mat* descriptors)
 {
     cv::Mat rsquaredSumMat;
-    cv::reduce(descriptors.mul(descriptors), rsquaredSumMat, 1, cv::REDUCE_SUM);
+    cv::reduce(descriptors->mul(*descriptors), rsquaredSumMat, 1, cv::REDUCE_SUM);
     cv::sqrt(rsquaredSumMat, rsquaredSumMat);
-    for (int i = 0; i < descriptors.rows; ++i) {
+    for (int i = 0; i < descriptors->rows; ++i) {
         float rsquaredSum = std::max<float>(rsquaredSumMat.ptr<float>()[i], 1e-12);
-        descriptors.row(i) /= rsquaredSum;
+        descriptors->row(i) /= rsquaredSum;
     }
 }
 

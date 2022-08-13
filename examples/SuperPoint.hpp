@@ -9,6 +9,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <ort_utility/ort_utility.hpp>
+#include <vector>
 
 namespace Ort
 {
