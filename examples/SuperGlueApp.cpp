@@ -62,17 +62,17 @@ int main(int argc, char* argv[])
 
     // superglue
     static const int DUMMY_NUM_KEYPOINTS = 256;
-    Ort::SuperPoint superGlueOsh(SUPERGLUE_ONNX_MODEL_PATH, 0,
-                                 std::vector<std::vector<int64_t>>{
-                                     {4},
-                                     {1, DUMMY_NUM_KEYPOINTS},
-                                     {1, DUMMY_NUM_KEYPOINTS, 2},
-                                     {1, 256, DUMMY_NUM_KEYPOINTS},
-                                     {4},
-                                     {1, DUMMY_NUM_KEYPOINTS},
-                                     {1, DUMMY_NUM_KEYPOINTS, 2},
-                                     {1, 256, DUMMY_NUM_KEYPOINTS},
-                                 });
+    Ort::OrtSessionHandler superGlueOsh(SUPERGLUE_ONNX_MODEL_PATH, 0,
+                                        std::vector<std::vector<int64_t>>{
+                                            {4},
+                                            {1, DUMMY_NUM_KEYPOINTS},
+                                            {1, DUMMY_NUM_KEYPOINTS, 2},
+                                            {1, 256, DUMMY_NUM_KEYPOINTS},
+                                            {4},
+                                            {1, DUMMY_NUM_KEYPOINTS},
+                                            {1, DUMMY_NUM_KEYPOINTS, 2},
+                                            {1, 256, DUMMY_NUM_KEYPOINTS},
+                                        });
 
     int numKeypoints0 = superPointResults[0].first.size();
     int numKeypoints1 = superPointResults[1].first.size();
