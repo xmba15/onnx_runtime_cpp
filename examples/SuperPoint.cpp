@@ -28,7 +28,6 @@ std::vector<int> SuperPoint::nmsFast(const std::vector<cv::KeyPoint>& keyPoints,
 {
     static const int TO_PROCESS = 1;
     static const int EMPTY_OR_SUPPRESSED = 0;
-    static const int KEPT = -1;
 
     std::vector<int> sortedIndices(keyPoints.size());
     std::iota(sortedIndices.begin(), sortedIndices.end(), 0);
@@ -37,14 +36,14 @@ std::vector<int> SuperPoint::nmsFast(const std::vector<cv::KeyPoint>& keyPoints,
     std::stable_sort(sortedIndices.begin(), sortedIndices.end(),
                      [&keyPoints](int lidx, int ridx) { return keyPoints[lidx].response > keyPoints[ridx].response; });
 
-    cv::Mat grid = cv::Mat(height, width, CV_8S, TO_PROCESS);
+    cv::Mat grid = cv::Mat(height, width, CV_8U, TO_PROCESS);
     std::vector<int> keepIndices;
 
     for (int idx : sortedIndices) {
         int x = keyPoints[idx].pt.x;
         int y = keyPoints[idx].pt.y;
 
-        if (grid.at<schar>(y, x) == TO_PROCESS) {
+        if (grid.at<uchar>(y, x) == TO_PROCESS) {
             for (int i = y - distThresh; i < y + distThresh; ++i) {
                 if (i < 0 || i >= height) {
                     continue;
@@ -54,11 +53,9 @@ std::vector<int> SuperPoint::nmsFast(const std::vector<cv::KeyPoint>& keyPoints,
                     if (j < 0 || j >= width) {
                         continue;
                     }
-                    grid.at<int>(i, j) = EMPTY_OR_SUPPRESSED;
+                    grid.at<uchar>(i, j) = EMPTY_OR_SUPPRESSED;
                 }
             }
-
-            grid.at<int>(y, x) = KEPT;
             keepIndices.emplace_back(idx);
         }
     }
