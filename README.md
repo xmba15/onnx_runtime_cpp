@@ -350,6 +350,11 @@ wget https://raw.githubusercontent.com/StaRainJ/Multi-modality-image-matching-da
     <img width="49%" height="250" src="docs/images/RemoteSensing_CS5.jpg">
 </p>
 
+<p align="center" width="100%">
+    <img width="49%" height="250" src="docs/images/ComputerVision_VisionDN_1.jpg">
+    <img width="49%" height="250" src="docs/images/RetinaFix.jpg">
+</p>
+
 <details>
 <summary>Usage</summary>
 
@@ -371,12 +376,6 @@ python3 scripts/superglue/convert_to_onnx.py
 ```bash
 ./build/examples/super_glue /path/to/super_point.onnx /path/to/super_glue.onnx /path/to/1st/image /path/to/2nd/image
 ```
-
-- Note: the pretrained superglue model tends to fail on Day-Night image pairs (which also happens for SuperPoint + KNN Match + Lowe's Ratio Test case).
-
-<p align="center" width="100%">
-    <img width="49%" height="250" src="docs/images/ComputerVision_VisionDN_1.jpg">
-</p>
 
 </details>
 
