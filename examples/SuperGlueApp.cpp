@@ -125,8 +125,8 @@ int main(int argc, char* argv[])
     cv::drawMatches(images[0], superPointResults[0].first, images[1], superPointResults[1].first, goodMatches,
                     matchesImage, cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
                     cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
-    cv::imwrite("super_point_good_matches.jpg", matchesImage);
-    cv::imshow("super_point_good_matches", matchesImage);
+    cv::imwrite("super_point_super_glue_good_matches.jpg", matchesImage);
+    cv::imshow("super_point_super_glue_good_matches", matchesImage);
     cv::waitKey();
 
     return EXIT_SUCCESS;

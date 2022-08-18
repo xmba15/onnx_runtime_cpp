@@ -7,6 +7,7 @@
 
 #include "SuperPoint.hpp"
 #include "Utility.hpp"
+#include <opencv2/features2d.hpp>
 
 namespace
 {
@@ -49,21 +50,12 @@ int main(int argc, char* argv[])
     std::transform(grays.begin(), grays.end(), std::back_inserter(results),
                    [&osh, &dst](const auto& gray) { return processOneFrame(osh, gray, dst.data()); });
 
-    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
-    std::vector<std::vector<cv::DMatch>> knnMatches;
-    const int numMatch = 2;
-    matcher->knnMatch(results[0].second, results[1].second, knnMatches, numMatch);
-
-    std::vector<cv::DMatch> goodMatches;
-    const float loweRatioThresh = 0.8;
-    for (const auto& match : knnMatches) {
-        if (match[0].distance < loweRatioThresh * match[1].distance) {
-            goodMatches.emplace_back(match[0]);
-        }
-    }
+    cv::BFMatcher matcher(cv::NORM_L2, true /* crossCheck */);
+    std::vector<cv::DMatch> knnMatches;
+    matcher.match(results[0].second, results[1].second, knnMatches);
 
     cv::Mat matchesImage;
-    cv::drawMatches(images[0], results[0].first, images[1], results[1].first, goodMatches, matchesImage,
+    cv::drawMatches(images[0], results[0].first, images[1], results[1].first, knnMatches, matchesImage,
                     cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
                     cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
     cv::imwrite("super_point_good_matches.jpg", matchesImage);
