@@ -6,6 +6,11 @@
  */
 
 #include <onnxruntime/core/session/onnxruntime_cxx_api.h>
+
+#if ENABLE_TENSORRT
+#include <onnxruntime/core/providers/tensorrt/tensorrt_provider_factory.h>
+#endif
+
 #include <ort_utility/ort_utility.hpp>
 
 #include <algorithm>
@@ -207,10 +212,15 @@ void OrtSessionHandler::OrtSessionHandlerIml::initSession()
     Ort::SessionOptions sessionOptions;
 
     sessionOptions.SetIntraOpNumThreads(1);
+    // tensorrt options can be customized into sessionOptions
+    // https://onnxruntime.ai/docs/execution-providers/TensorRT-ExecutionProvider.html
 
 #if ENABLE_GPU
     if (m_gpuIdx.has_value()) {
         Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, m_gpuIdx.value()));
+#if ENABLE_TENSORRT
+        Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_Tensorrt(sessionOptions, m_gpuIdx.value()));
+#endif
     }
 #endif
 

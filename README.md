@@ -23,7 +23,8 @@ Hope that they both are helpful for your work.
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork), [SuperGlue](https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590). Might consider supporting more if requested
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork), [SuperGlue](https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590). Might consider supporting more if requested.
+- [x] (Minimal^^) Support for TensorRT backend
 - [ ] Batch-inference
 
 ## Installation
@@ -95,6 +96,10 @@ docker build -f ./dockerfiles/ubuntu2004_gpu.dockerfile -t onnx_runtime_gpu .
 # run
 docker run -it --rm --gpus all -v `pwd`:/workspace onnx_runtime_gpu
 ```
+
+- Onnxruntime will be built with TensorRT support if the environment has TensorRT. Check [this memo](./docs/onnxruntime_tensorrt.md) for useful URLs related to building with TensorRT.
+- Be careful to choose TensorRT version compatible with onnxruntime. A good guess can be inferred from [HERE](https://github.com/microsoft/onnxruntime/blob/main/dockerfiles/Dockerfile.tensorrt).
+- Also it is not possible to use models whose input shapes are dynamic with TensorRT backend, according to [this](https://onnxruntime.ai/docs/execution-providers/TensorRT-ExecutionProvider.html#shape-inference-for-tensorrt-subgraphs)
 
 </details>
 
