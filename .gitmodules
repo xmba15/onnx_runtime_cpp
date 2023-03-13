@@ -4,3 +4,6 @@
 [submodule "scripts/superglue/SuperGluePretrainedNetwork"]
 	path = scripts/superglue/SuperGluePretrainedNetwork
 	url = https://github.com/magicleap/SuperGluePretrainedNetwork.git
+[submodule "scripts/loftr/LoFTR"]
+	path = scripts/loftr/LoFTR
+	url = https://github.com/xmba15/LoFTR
