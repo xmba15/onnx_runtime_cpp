@@ -1,5 +1,10 @@
 [![Build](https://github.com/xmba15/onnx_runtime_cpp/actions/workflows/build.yml/badge.svg)](https://github.com/xmba15/onnx_runtime_cpp/actions/workflows/build.yml)
 
+If this work somehow makes your day, maybe you can consider :)
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/xmba15)
+
+
 # small c++ library to quickly use [onnxruntime](https://github.com/microsoft/onnxruntime) to deploy deep learning models
 
 Thanks to [cardboardcode](https://github.com/cardboardcode), we have [the documentation](https://onnx-runtime-cpp.readthedocs.io/en/latest/index.html) for this small library.
