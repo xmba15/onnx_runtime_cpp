@@ -177,3 +177,21 @@ target_include_directories(super_glue
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(loftr
+  ${CMAKE_CURRENT_LIST_DIR}/LoFTR.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/LoFTRApp.cpp
+)
+
+target_link_libraries(loftr
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(loftr
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)
