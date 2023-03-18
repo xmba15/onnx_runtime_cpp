@@ -23,7 +23,7 @@ Hope that they both are helpful for your work.
 ## TODO
 
 - [x] Support inference of multi-inputs, multi-outputs
-- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork), [SuperGlue](https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590). Might consider supporting more if requested.
+- [x] Examples for famous models, like yolov3, mask-rcnn, [ultra-light-weight face detector](https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB), [yolox](https://github.com/Megvii-BaseDetection/YOLOX), [PaddleSeg](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.3), [SuperPoint](https://github.com/magicleap/SuperPointPretrainedNetwork), [SuperGlue](https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590), [LoFTR](https://zju3dv.github.io/loftr/). Might consider supporting more if requested.
 - [x] (Minimal^^) Support for TensorRT backend
 - [ ] Batch-inference
 
@@ -380,6 +380,39 @@ python3 scripts/superglue/convert_to_onnx.py
 
 ```bash
 ./build/examples/super_glue /path/to/super_point.onnx /path/to/super_glue.onnx /path/to/1st/image /path/to/2nd/image
+```
+
+</details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### [LoFTR](https://zju3dv.github.io/loftr/)
+
+---
+
+<p align="center" width="100%">
+    <img width="100%" src="docs/images/loftr.jpg">
+</p>
+
+<details>
+<summary>Usage</summary>
+
+- Download [LoFTR](https://github.com/zju3dv/LoFTR) weights indoor*ds_new.ckpt from [HERE](https://drive.google.com/drive/folders/1xu2Pq6mZT5hmFgiYMBT9Zt8h1yO-3SIp). (LoFTR's [latest commit](b4ee7eb0359d0062e794c99f73e27639d7c7ac9f) seems to be only compatible with the new weights (Ref: https://github.com/zju3dv/LoFTR/issues/48). Hence, this onnx cpp application is only compatible with \_indoor_ds_new.ckpt* weights)
+
+- Convert LoFTR's pretrained weights to onnx format
+
+```bash
+git submodule update --init --recursive
+python3 -m pip install -r scripts/loftr/requirements.txt
+python3 scripts/loftr/convert_to_onnx.py --model_path /path/to/indoor_ds_new.ckpt
+```
+
+- Download test images from [this dataset](https://github.com/StaRainJ/Multi-modality-image-matching-database-metrics-methods): Or prepare some pairs of your own images
+
+- Test inference apps
+
+```bash
+./build/examples/loftr /path/to/loftr.onnx /path/to/loftr.onnx /path/to/1st/image /path/to/2nd/image
 ```
 
 </details>
