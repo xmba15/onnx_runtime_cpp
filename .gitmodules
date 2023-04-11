@@ -7,3 +7,6 @@
 [submodule "scripts/loftr/LoFTR"]
 	path = scripts/loftr/LoFTR
 	url = https://github.com/xmba15/LoFTR
+[submodule "scripts/segment-anything/segment-anything"]
+	path = scripts/segment-anything/segment-anything
+	url = https://github.com/facebookresearch/segment-anything
