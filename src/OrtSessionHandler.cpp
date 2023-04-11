@@ -5,6 +5,7 @@
  *
  */
 
+#include <onnxruntime/core/session/onnxruntime_c_api.h>
 #include <onnxruntime/core/session/onnxruntime_cxx_api.h>
 
 #if ENABLE_TENSORRT
@@ -254,9 +255,13 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
         m_inputTensorSizes.emplace_back(
             std::accumulate(std::begin(curInputShape), std::end(curInputShape), 1, std::multiplies<int64_t>()));
 
+#if ORT_API_VERSION > 12
+        m_inputNodeNames.emplace_back(strdup(m_session.GetInputNameAllocated(i, m_ortAllocator).get()));
+#else
         char* inputName = m_session.GetInputName(i, m_ortAllocator);
         m_inputNodeNames.emplace_back(strdup(inputName));
         m_ortAllocator.Free(inputName);
+#endif
     }
 
     {
@@ -276,9 +281,13 @@ void OrtSessionHandler::OrtSessionHandlerIml::initModelInfo()
 
         m_outputShapes.emplace_back(tensorInfo.GetShape());
 
+#if ORT_API_VERSION > 12
+        m_outputNodeNames.emplace_back(strdup(m_session.GetOutputNameAllocated(i, m_ortAllocator).get()));
+#else
         char* outputName = m_session.GetOutputName(i, m_ortAllocator);
         m_outputNodeNames.emplace_back(strdup(outputName));
         m_ortAllocator.Free(outputName);
+#endif
     }
 
     {

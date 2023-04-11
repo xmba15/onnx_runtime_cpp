@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-readonly CMAKE_VERSION_TO_INSTALL="3.18.0"
+readonly CMAKE_VERSION_TO_INSTALL="3.24.0"
 
 function command_exists
 {
