@@ -24,7 +24,7 @@ jobs:
   test-production:
     runs-on: ubuntu-20.04
     container:
-      image: xmba15/onnx_runtime_cpp:v1.10.0-ubuntu20.04
+      image: xmba15/onnx_runtime_cpp:v1.14.1-ubuntu20.04
 
     steps:
       - uses: actions/checkout@v3
