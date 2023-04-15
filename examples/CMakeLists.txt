@@ -195,3 +195,22 @@ target_include_directories(loftr
   PUBLIC
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# ---------------------------------------------------------
+
+add_executable(lisrd
+  ${CMAKE_CURRENT_LIST_DIR}/LISRD.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/SuperPoint.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/LISRDApp.cpp
+)
+
+target_link_libraries(lisrd
+  PUBLIC
+    ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(lisrd
+  PUBLIC
+    ${OpenCV_INCLUDE_DIRS}
+)

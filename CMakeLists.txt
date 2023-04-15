@@ -10,8 +10,16 @@ set(onnxruntime_INCLUDE_DIRS
   ${onnxruntime_INSTALL_PREFIX}/include/onnxruntime
   ${onnxruntime_INSTALL_PREFIX}/include/onnxruntime/core/session
 )
-
 find_library(onnxruntime_LIBS NAMES onnxruntime PATHS /usr/local/lib)
+
+option(ENABLE_TORCH "ENABLE LibTorch Inference" ON)
+if(ENABLE_TORCH)
+  add_definitions(-DENABLE_TORCH)
+  set(Torch_DIR "/path/to/libtorch")
+  find_package(Torch REQUIED)
+else()
+  message(STATUS "DISABLE LibTorch Inference")
+endif()
 
 find_package(CUDA QUIET)
 
