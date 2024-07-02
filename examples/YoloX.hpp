@@ -62,7 +62,7 @@ class YoloX : public ImageRecognitionOrtSessionHandlerBase
 
     struct GridAndStride;
 
-    std::vector<GridAndStride> genereateGridsAndStrides(int targetSize, const std::vector<int>& strides) const;
+    std::vector<GridAndStride> generateGridsAndStrides(int targetSize, const std::vector<int>& strides) const;
 
     std::vector<Object> generateYoloXProposals(const float* prob, const std::vector<GridAndStride>& gridStrides,
                                                float confThresh) const;

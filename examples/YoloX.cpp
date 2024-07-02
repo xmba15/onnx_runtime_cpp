@@ -44,14 +44,14 @@ void YoloX::preprocess(float* dst,                     //
 
 std::vector<YoloX::Object> YoloX::decodeOutputs(const float* prob, float confThresh) const
 {
-    std::vector<GridAndStride> gridStrides = this->genereateGridsAndStrides(IMG_W, m_strides);
+    std::vector<GridAndStride> gridStrides = this->generateGridsAndStrides(IMG_W, m_strides);
     return this->generateYoloXProposals(prob, gridStrides, confThresh);
 }
 
 /**
  *  @brief https://github.com/Megvii-BaseDetection/YOLOX/blob/main/demo/MegEngine/cpp/yolox.cpp#L64
  */
-std::vector<YoloX::GridAndStride> YoloX::genereateGridsAndStrides(int targetSize, const std::vector<int>& strides) const
+std::vector<YoloX::GridAndStride> YoloX::generateGridsAndStrides(int targetSize, const std::vector<int>& strides) const
 {
     std::vector<YoloX::GridAndStride> gridStrides;
     for (auto stride : strides) {

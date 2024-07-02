@@ -10,7 +10,7 @@ sudo apt-get update
 sudo apt install -y --no-install-recommends zlib1g-dev
 
 readonly ONNXRUNTIME_VERSION="v1.14.1"
-git clone --recursive -b ${ONNXRUNTIME_VERSION} https://github.com/Microsoft/onnxruntime
+# git clone --recursive -b ${ONNXRUNTIME_VERSION} https://github.com/Microsoft/onnxruntime
 cd onnxruntime
 
 INSTALL_PREFIX="/usr/local"

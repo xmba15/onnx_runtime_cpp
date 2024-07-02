@@ -5,8 +5,10 @@
  *
  */
 
-#include <onnxruntime/core/session/onnxruntime_c_api.h>
-#include <onnxruntime/core/session/onnxruntime_cxx_api.h>
+
+#include <../onnxruntime/include/onnxruntime/core/session/onnxruntime_c_api.h>
+#include <../onnxruntime/include/onnxruntime/core/session/onnxruntime_cxx_api.h>
+
 
 #if ENABLE_TENSORRT
 #include <onnxruntime/core/providers/tensorrt/tensorrt_provider_factory.h>
