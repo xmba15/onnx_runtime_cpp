@@ -148,7 +148,7 @@ the following result can be obtained
 <details>
 <summary>Usage</summary>
 
-- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/yolov2)
+- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/raw/refs/heads/main/validated/vision/object_detection_segmentation/tiny-yolov2/model/tinyyolov2-7.onnx)
 
 - The shape of the output would be
 
@@ -180,7 +180,7 @@ the following result can be obtained
 <details>
 <summary>Usage</summary>
 
-- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/mask-rcnn)
+- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/raw/refs/heads/main/validated/vision/object_detection_segmentation/mask-rcnn/model/MaskRCNN-10.onnx)
 
 - As also stated in the url above, there are four outputs: boxes(nboxes x 4), labels(nboxes), scores(nboxes), masks(nboxesx1x28x28)
 - Test mask-rcnn inference apps
@@ -205,7 +205,7 @@ the following result can be obtained
 <details>
 <summary>Usage</summary>
 
-- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/yolov3)
+- Download model from onnx model zoo: [HERE](https://github.com/onnx/models/raw/refs/heads/main/validated/vision/object_detection_segmentation/yolov3/model/yolov3-10.onnx)
 
 - Test yolo-v3 inference apps
 
