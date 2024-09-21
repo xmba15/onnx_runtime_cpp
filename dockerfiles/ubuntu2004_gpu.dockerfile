@@ -1,8 +1,11 @@
-FROM  nvidia/cuda:11.4.0-cudnn8-devel-ubuntu20.04
+FROM  nvidia/cuda:11.4.3-cudnn8-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /build
+COPY ./scripts/install_latest_cmake.bash install_latest_cmake.bash
+COPY ./scripts/install_onnx_runtime.bash install_onnx_runtime.bash
+COPY ./scripts/install_apps_dependencies.bash install_apps_dependencies.bash
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
